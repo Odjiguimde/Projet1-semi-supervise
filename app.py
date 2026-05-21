@@ -1211,90 +1211,141 @@ with tab4:
     st.divider()
 
     # --- Schéma de flux comparatif ---
-    st.subheader("🔄 Pipeline Comparatif")
+st.subheader("🔄 Pipeline Comparatif")
 
-    st.markdown("""
-    <div style='display: flex; gap: 20px; margin: 16px 0;'>
+pipeline_svg = """
+<svg width="100%" viewBox="0 0 680 620" role="img"
+     xmlns="http://www.w3.org/2000/svg"
+     style="display:block; margin: 0 auto;">
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5"
+            markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M2 1L8 5L2 9" fill="none" stroke="#888" stroke-width="1.5"
+            stroke-linecap="round" stroke-linejoin="round"/>
+    </marker>
+  </defs>
 
-        <div style='flex: 1; background: linear-gradient(180deg, #0a1628, #1a2a4e);
-                    border: 1px solid #2a4a8e; border-radius: 12px; padding: 20px;'>
-            <div style='color: #4fc3f7; font-weight: 700; font-size: 1rem;
-                        margin-bottom: 16px; text-align: center;'>
-                🎯 Pipeline Classification
-            </div>
-            <div style='color: #d0d0ee; font-size: 0.88rem; line-height: 2;'>
-                📦 <strong>Données MNIST</strong> (70k images)<br>
-                ↓<br>
-                ✂️ <strong>Split</strong> Train / Val / Test<br>
-                ↓<br>
-                🔢 <strong>Normalisation</strong> [0, 1]<br>
-                ↓<br>
-                🌲 <strong>Random Forest</strong> (n_estimators arbres)<br>
-                ↓<br>
-                📊 <strong>Évaluation</strong> : Accuracy, Matrice, F1<br>
-                ↓<br>
-                🔥 <strong>Feature Importance</strong> (28×28 carte)
-            </div>
-        </div>
+  <!-- TITRES -->
+  <rect x="30"  y="20" width="290" height="36" rx="8" fill="#1a3a5e" stroke="#2a5a8e" stroke-width="0.5"/>
+  <text font-family="DM Sans,sans-serif" font-size="14" font-weight="600"
+        fill="#4fc3f7" x="175" y="38" text-anchor="middle" dominant-baseline="central">🎯 Pipeline Classification</text>
 
-        <div style='flex: 1; background: linear-gradient(180deg, #1a0a28, #2e1a4e);
-                    border: 1px solid #6a2a8e; border-radius: 12px; padding: 20px;'>
-            <div style='color: #b39ddb; font-weight: 700; font-size: 1rem;
-                        margin-bottom: 16px; text-align: center;'>
-                🔍 Pipeline Clustering
-            </div>
-            <div style='color: #d0d0ee; font-size: 0.88rem; line-height: 2;'>
-                📦 <strong>Données MNIST</strong> (sans labels)<br>
-                ↓<br>
-                🔢 <strong>StandardScaler</strong> (centrage-réduction)<br>
-                ↓<br>
-                📉 <strong>PCA</strong> (784 → {pca} composantes)<br>
-                ↓<br>
-                🔵 <strong>K-Means++</strong> (K={k} clusters)<br>
-                ↓<br>
-                📊 <strong>Évaluation</strong> : Silhouette, ARI, NMI<br>
-                ↓<br>
-                🗺️ <strong>t-SNE</strong> (visualisation 2D)
-            </div>
-        </div>
+  <rect x="360" y="20" width="290" height="36" rx="8" fill="#2a1a4e" stroke="#4a3a7e" stroke-width="0.5"/>
+  <text font-family="DM Sans,sans-serif" font-size="14" font-weight="600"
+        fill="#b39ddb" x="505" y="38" text-anchor="middle" dominant-baseline="central">🔍 Pipeline Clustering</text>
 
-    </div>
-    """.format(pca=n_components_pca, k=n_clusters), unsafe_allow_html=True)
+  <!-- SÉPARATEUR VERTICAL -->
+  <line x1="340" y1="70" x2="340" y2="520" stroke="#2d2d4e" stroke-width="1" stroke-dasharray="5 4"/>
 
-    st.divider()
+  <!-- ══ COLONNE GAUCHE ══ -->
+  <!-- Étape 1 — gris neutre -->
+  <rect x="30" y="84" width="290" height="52" rx="8" fill="#1a1a2e" stroke="#3a3a5e" stroke-width="0.5"/>
+  <text font-family="DM Sans,sans-serif" font-size="14" font-weight="600" fill="#d0d0ee"
+        x="175" y="103" text-anchor="middle" dominant-baseline="central">Données MNIST</text>
+  <text font-family="DM Sans,sans-serif" font-size="12" fill="#8888aa"
+        x="175" y="122" text-anchor="middle" dominant-baseline="central">70 000 images 28×28 px</text>
+  <line x1="175" y1="136" x2="175" y2="156" stroke="#888" stroke-width="1.5" marker-end="url(#arrow)"/>
 
-    # --- Conclusion finale ---
-    st.subheader("📝 Conclusion")
+  <!-- Étape 2 -->
+  <rect x="30" y="158" width="290" height="52" rx="8" fill="#0f2a4a" stroke="#2a5a8e" stroke-width="0.5"/>
+  <text font-family="DM Sans,sans-serif" font-size="14" font-weight="600" fill="#4fc3f7"
+        x="175" y="177" text-anchor="middle" dominant-baseline="central">Split train / val / test</text>
+  <text font-family="DM Sans,sans-serif" font-size="12" fill="#7aaccf"
+        x="175" y="196" text-anchor="middle" dominant-baseline="central">70% / 15% / 15%</text>
+  <line x1="175" y1="210" x2="175" y2="230" stroke="#4fc3f7" stroke-width="1.5" marker-end="url(#arrow)"/>
 
-    st.markdown(f"""
-    <div class='custom-box success'>
-        <strong>📌 Synthèse de l'analyse comparative :</strong>
-        <br><br>
-        Sur le dataset MNIST ({n_samples:,} images, sous-échantillon) :
-        <br><br>
-        • Le <strong>Random Forest</strong> atteint une accuracy de <strong>{rf_acc:.2f}%</strong>
-          sur le test set — résultat remarquable pour un modèle sans CNN.
-          Il exploite pleinement la structure des labels.
-        <br><br>
-        • Le <strong>K-Means</strong> (K={n_clusters}) avec PCA à {n_components_pca} composantes
-          obtient un Silhouette Score de <strong>{sil_s:.4f}</strong>, un ARI de <strong>{ari_s:.4f}</strong>
-          et un NMI de <strong>{nmi_s:.4f}</strong>. Ces scores confirment que les clusters
-          retrouvent naturellement une grande partie de la structure des classes,
-          <em>sans jamais voir les labels</em>.
-        <br><br>
-        • La projection <strong>t-SNE</strong> révèle visuellement que les deux approches
-          identifient les mêmes îlots dans l'espace des données.
-    </div>
-    """, unsafe_allow_html=True)
+  <!-- Étape 3 -->
+  <rect x="30" y="232" width="290" height="52" rx="8" fill="#0f2a4a" stroke="#2a5a8e" stroke-width="0.5"/>
+  <text font-family="DM Sans,sans-serif" font-size="14" font-weight="600" fill="#4fc3f7"
+        x="175" y="251" text-anchor="middle" dominant-baseline="central">Normalisation pixels</text>
+  <text font-family="DM Sans,sans-serif" font-size="12" fill="#7aaccf"
+        x="175" y="270" text-anchor="middle" dominant-baseline="central">Valeurs ramenées à [0, 1]</text>
+  <line x1="175" y1="284" x2="175" y2="304" stroke="#4fc3f7" stroke-width="1.5" marker-end="url(#arrow)"/>
 
-    st.markdown("""
-    <div class='custom-box' style='border-left-color: #b39ddb; margin-top: 16px;'>
-        <strong>💡 Ce que cet exemple nous enseigne :</strong><br><br>
-        Le clustering non supervisé peut découvrir des structures significatives
-        dans les données sans <em>aucune</em> supervision — c'est puissant pour
-        l'exploration de données inconnues. Mais dès que les labels sont disponibles,
-        la classification supervisée surpasse largement le clustering en termes de précision.
-        <br><br>
-        <strong>👉 Ces deux approches sont complémentaires, pas concurrentes.</strong>
-    </div>
-    """, unsafe_allow_html=True)
+  <!-- Étape 4 -->
+  <rect x="30" y="306" width="290" height="52" rx="8" fill="#0f2a4a" stroke="#2a5a8e" stroke-width="0.5"/>
+  <text font-family="DM Sans,sans-serif" font-size="14" font-weight="600" fill="#4fc3f7"
+        x="175" y="325" text-anchor="middle" dominant-baseline="central">Random Forest</text>
+  <text font-family="DM Sans,sans-serif" font-size="12" fill="#7aaccf"
+        x="175" y="344" text-anchor="middle" dominant-baseline="central">n arbres de décision</text>
+  <line x1="175" y1="358" x2="175" y2="378" stroke="#4fc3f7" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+  <!-- Étape 5 -->
+  <rect x="30" y="380" width="290" height="52" rx="8" fill="#0f2a4a" stroke="#2a5a8e" stroke-width="0.5"/>
+  <text font-family="DM Sans,sans-serif" font-size="14" font-weight="600" fill="#4fc3f7"
+        x="175" y="399" text-anchor="middle" dominant-baseline="central">Évaluation supervisée</text>
+  <text font-family="DM Sans,sans-serif" font-size="12" fill="#7aaccf"
+        x="175" y="418" text-anchor="middle" dominant-baseline="central">Accuracy, matrice de confusion, F1</text>
+  <line x1="175" y1="432" x2="175" y2="452" stroke="#06D6A0" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+  <!-- Étape 6 finale (teal) -->
+  <rect x="30" y="454" width="290" height="52" rx="8" fill="#073a2a" stroke="#1a6a4a" stroke-width="0.5"/>
+  <text font-family="DM Sans,sans-serif" font-size="14" font-weight="600" fill="#06D6A0"
+        x="175" y="473" text-anchor="middle" dominant-baseline="central">Feature importance</text>
+  <text font-family="DM Sans,sans-serif" font-size="12" fill="#4caf50"
+        x="175" y="492" text-anchor="middle" dominant-baseline="central">Carte thermique pixels 28×28</text>
+
+  <!-- ══ COLONNE DROITE ══ -->
+  <!-- Étape 1 — gris neutre -->
+  <rect x="360" y="84" width="290" height="52" rx="8" fill="#1a1a2e" stroke="#3a3a5e" stroke-width="0.5"/>
+  <text font-family="DM Sans,sans-serif" font-size="14" font-weight="600" fill="#d0d0ee"
+        x="505" y="103" text-anchor="middle" dominant-baseline="central">Données MNIST (sans labels)</text>
+  <text font-family="DM Sans,sans-serif" font-size="12" fill="#8888aa"
+        x="505" y="122" text-anchor="middle" dominant-baseline="central">Apprentissage non supervisé</text>
+  <line x1="505" y1="136" x2="505" y2="156" stroke="#888" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+  <!-- Étape 2 -->
+  <rect x="360" y="158" width="290" height="52" rx="8" fill="#1e0f3a" stroke="#4a3a7e" stroke-width="0.5"/>
+  <text font-family="DM Sans,sans-serif" font-size="14" font-weight="600" fill="#b39ddb"
+        x="505" y="177" text-anchor="middle" dominant-baseline="central">StandardScaler</text>
+  <text font-family="DM Sans,sans-serif" font-size="12" fill="#8877bb"
+        x="505" y="196" text-anchor="middle" dominant-baseline="central">Centrage et réduction</text>
+  <line x1="505" y1="210" x2="505" y2="230" stroke="#b39ddb" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+  <!-- Étape 3 -->
+  <rect x="360" y="232" width="290" height="52" rx="8" fill="#1e0f3a" stroke="#4a3a7e" stroke-width="0.5"/>
+  <text font-family="DM Sans,sans-serif" font-size="14" font-weight="600" fill="#b39ddb"
+        x="505" y="251" text-anchor="middle" dominant-baseline="central">PCA — réduction de dimension</text>
+  <text font-family="DM Sans,sans-serif" font-size="12" fill="#8877bb"
+        x="505" y="270" text-anchor="middle" dominant-baseline="central">784 → n composantes principales</text>
+  <line x1="505" y1="284" x2="505" y2="304" stroke="#b39ddb" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+  <!-- Étape 4 -->
+  <rect x="360" y="306" width="290" height="52" rx="8" fill="#1e0f3a" stroke="#4a3a7e" stroke-width="0.5"/>
+  <text font-family="DM Sans,sans-serif" font-size="14" font-weight="600" fill="#b39ddb"
+        x="505" y="325" text-anchor="middle" dominant-baseline="central">K-Means++</text>
+  <text font-family="DM Sans,sans-serif" font-size="12" fill="#8877bb"
+        x="505" y="344" text-anchor="middle" dominant-baseline="central">K clusters (k-means++, n_init=10)</text>
+  <line x1="505" y1="358" x2="505" y2="378" stroke="#b39ddb" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+  <!-- Étape 5 -->
+  <rect x="360" y="380" width="290" height="52" rx="8" fill="#1e0f3a" stroke="#4a3a7e" stroke-width="0.5"/>
+  <text font-family="DM Sans,sans-serif" font-size="14" font-weight="600" fill="#b39ddb"
+        x="505" y="399" text-anchor="middle" dominant-baseline="central">Évaluation non supervisée</text>
+  <text font-family="DM Sans,sans-serif" font-size="12" fill="#8877bb"
+        x="505" y="418" text-anchor="middle" dominant-baseline="central">Silhouette, ARI, NMI, inertie</text>
+  <line x1="505" y1="432" x2="505" y2="452" stroke="#06D6A0" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+  <!-- Étape 6 finale (teal) -->
+  <rect x="360" y="454" width="290" height="52" rx="8" fill="#073a2a" stroke="#1a6a4a" stroke-width="0.5"/>
+  <text font-family="DM Sans,sans-serif" font-size="14" font-weight="600" fill="#06D6A0"
+        x="505" y="473" text-anchor="middle" dominant-baseline="central">Projection t-SNE 2D</text>
+  <text font-family="DM Sans,sans-serif" font-size="12" fill="#4caf50"
+        x="505" y="492" text-anchor="middle" dominant-baseline="central">Visualisation des clusters en 2D</text>
+
+  <!-- LÉGENDE -->
+  <rect x="30" y="534" width="620" height="58" rx="8" fill="#0d0d1a" stroke="#1e1e3a" stroke-width="0.5"/>
+  <text font-family="DM Sans,sans-serif" font-size="11" fill="#6666aa"
+        x="340" y="549" text-anchor="middle" dominant-baseline="central">Légende</text>
+  <rect x="60"  y="558" width="12" height="12" rx="2" fill="#1a1a2e" stroke="#3a3a5e"/>
+  <text font-family="DM Sans,sans-serif" font-size="11" fill="#8888aa" x="80"  y="565">Entrée commune</text>
+  <rect x="200" y="558" width="12" height="12" rx="2" fill="#0f2a4a" stroke="#2a5a8e"/>
+  <text font-family="DM Sans,sans-serif" font-size="11" fill="#8888aa" x="220" y="565">Étape Classification</text>
+  <rect x="380" y="558" width="12" height="12" rx="2" fill="#1e0f3a" stroke="#4a3a7e"/>
+  <text font-family="DM Sans,sans-serif" font-size="11" fill="#8888aa" x="400" y="565">Étape Clustering</text>
+  <rect x="540" y="558" width="12" height="12" rx="2" fill="#073a2a" stroke="#1a6a4a"/>
+  <text font-family="DM Sans,sans-serif" font-size="11" fill="#8888aa" x="560" y="565">Sortie finale</text>
+</svg>
+"""
+
+st.markdown(pipeline_svg, unsafe_allow_html=True)
