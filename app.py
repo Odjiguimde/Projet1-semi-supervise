@@ -1242,7 +1242,6 @@ with col_pipe1:
     <div style='background: linear-gradient(135deg, #0a0f1e 0%, #0d1528 100%);
                 border: 1px solid #2a3a6e;
                 border-radius: 20px;
-                padding: 0;
                 overflow: hidden;
                 box-shadow: 0 8px 32px rgba(0,0,0,0.3);'>
         
@@ -1399,7 +1398,6 @@ with col_pipe2:
     <div style='background: linear-gradient(135deg, #0a0f1e 0%, #0d1528 100%);
                 border: 1px solid #5a3a8e;
                 border-radius: 20px;
-                padding: 0;
                 overflow: hidden;
                 box-shadow: 0 8px 32px rgba(0,0,0,0.3);'>
         
