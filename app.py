@@ -1210,58 +1210,109 @@ with tab4:
 
     st.divider()
 
-    # --- Schéma de flux comparatif ---
-    st.subheader("🔄 Pipeline Comparatif")
+   # --- Schéma de flux comparatif ---
+st.subheader("🔄 Pipeline Comparatif")
 
-    st.markdown("""
-    <div style='display: flex; gap: 20px; margin: 16px 0;'>
+col_pipe1, col_pipe2 = st.columns(2)
 
-        <div style='flex: 1; background: linear-gradient(180deg, #0a1628, #1a2a4e);
-                    border: 1px solid #2a4a8e; border-radius: 12px; padding: 20px;'>
-            <div style='color: #4fc3f7; font-weight: 700; font-size: 1rem;
-                        margin-bottom: 16px; text-align: center;'>
-                🎯 Pipeline Classification
-            </div>
-            <div style='color: #d0d0ee; font-size: 0.88rem; line-height: 2;'>
-                📦 <strong>Données MNIST</strong> (70k images)<br>
-                ↓<br>
-                ✂️ <strong>Split</strong> Train / Val / Test<br>
-                ↓<br>
-                🔢 <strong>Normalisation</strong> [0, 1]<br>
-                ↓<br>
-                🌲 <strong>Random Forest</strong> (n_estimators arbres)<br>
-                ↓<br>
-                📊 <strong>Évaluation</strong> : Accuracy, Matrice, F1<br>
-                ↓<br>
-                🔥 <strong>Feature Importance</strong> (28×28 carte)
-            </div>
+with col_pipe1:
+    st.markdown(f"""
+    <div style='background: linear-gradient(180deg, #0a1628, #1a2a4e);
+                border: 1px solid #2a4a8e;
+                border-radius: 12px;
+                padding: 20px;
+                min-height: 420px;'>
+
+        <div style='color: #4fc3f7;
+                    font-weight: 700;
+                    font-size: 1rem;
+                    margin-bottom: 16px;
+                    text-align: center;'>
+
+            🎯 Pipeline Classification
         </div>
 
-        <div style='flex: 1; background: linear-gradient(180deg, #1a0a28, #2e1a4e);
-                    border: 1px solid #6a2a8e; border-radius: 12px; padding: 20px;'>
-            <div style='color: #b39ddb; font-weight: 700; font-size: 1rem;
-                        margin-bottom: 16px; text-align: center;'>
-                🔍 Pipeline Clustering
-            </div>
-            <div style='color: #d0d0ee; font-size: 0.88rem; line-height: 2;'>
-                📦 <strong>Données MNIST</strong> (sans labels)<br>
-                ↓<br>
-                🔢 <strong>StandardScaler</strong> (centrage-réduction)<br>
-                ↓<br>
-                📉 <strong>PCA</strong> (784 → {pca} composantes)<br>
-                ↓<br>
-                🔵 <strong>K-Means++</strong> (K={k} clusters)<br>
-                ↓<br>
-                📊 <strong>Évaluation</strong> : Silhouette, ARI, NMI<br>
-                ↓<br>
-                🗺️ <strong>t-SNE</strong> (visualisation 2D)
-            </div>
-        </div>
+        <div style='color: #d0d0ee;
+                    font-size: 0.92rem;
+                    line-height: 2;'>
 
+            📦 <strong>Données MNIST</strong> (70k images)<br><br>
+
+            ⬇️<br><br>
+
+            ✂️ <strong>Split</strong> Train / Val / Test<br><br>
+
+            ⬇️<br><br>
+
+            🔢 <strong>Normalisation</strong> [0, 1]<br><br>
+
+            ⬇️<br><br>
+
+            🌲 <strong>Random Forest</strong> ({n_estimators} arbres)<br><br>
+
+            ⬇️<br><br>
+
+            📊 <strong>Évaluation</strong><br>
+            Accuracy • Matrice • F1<br><br>
+
+            ⬇️<br><br>
+
+            🔥 <strong>Feature Importance</strong><br>
+            Carte 28×28
+        </div>
     </div>
-    """.format(pca=n_components_pca, k=n_clusters), unsafe_allow_html=True)
+    """, unsafe_allow_html=True)
 
-    st.divider()
+with col_pipe2:
+    st.markdown(f"""
+    <div style='background: linear-gradient(180deg, #1a0a28, #2e1a4e);
+                border: 1px solid #6a2a8e;
+                border-radius: 12px;
+                padding: 20px;
+                min-height: 420px;'>
+
+        <div style='color: #b39ddb;
+                    font-weight: 700;
+                    font-size: 1rem;
+                    margin-bottom: 16px;
+                    text-align: center;'>
+
+            🔍 Pipeline Clustering
+        </div>
+
+        <div style='color: #d0d0ee;
+                    font-size: 0.92rem;
+                    line-height: 2;'>
+
+            📦 <strong>Données MNIST</strong> (sans labels)<br><br>
+
+            ⬇️<br><br>
+
+            🔢 <strong>StandardScaler</strong><br>
+            centrage-réduction<br><br>
+
+            ⬇️<br><br>
+
+            📉 <strong>PCA</strong><br>
+            784 → {n_components_pca} composantes<br><br>
+
+            ⬇️<br><br>
+
+            🔵 <strong>K-Means++</strong><br>
+            K = {n_clusters} clusters<br><br>
+
+            ⬇️<br><br>
+
+            📊 <strong>Évaluation</strong><br>
+            Silhouette • ARI • NMI<br><br>
+
+            ⬇️<br><br>
+
+            🗺️ <strong>t-SNE</strong><br>
+            Visualisation 2D
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
 
     # --- Conclusion finale ---
     st.subheader("📝 Conclusion")
