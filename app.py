@@ -1287,7 +1287,7 @@ with col_pipe2:
     """, unsafe_allow_html=True)
 
     # --- Conclusion finale ---
-    st.subheader("📝 Conclusion")
+  st.subheader("📝 Conclusion")
 
     st.markdown(f"""
     <div class='custom-box success'>
