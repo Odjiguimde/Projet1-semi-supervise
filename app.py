@@ -1210,151 +1210,303 @@ with tab4:
 
     st.divider()
 
-    # --- Schéma de flux comparatif ---
-st.subheader("🔄 Pipeline Comparatif")
+    # --- Schéma de flux comparatif (image Matplotlib haute qualité) ---
+    st.subheader("🔄 Pipeline Comparatif")
 
-@st.cache_data
-def generer_pipeline_image():
-    """Génère le diagramme pipeline sous forme d'image PNG avec Matplotlib."""
-    
-    fig, ax = plt.subplots(figsize=(14, 13), facecolor="#0d0d1a")
-    ax.set_facecolor("#0d0d1a")
-    ax.set_xlim(0, 14)
-    ax.set_ylim(0, 13)
-    ax.axis("off")
-
-    # ── Paramètres visuels ──
-    BOX_W      = 5.6
-    BOX_H      = 0.72
-    COL_L      = 1.2    # centre colonne gauche
-    COL_R      = 8.8    # centre colonne droite
-    STEPS_Y    = [10.8, 9.4, 8.0, 6.6, 5.2, 3.8]  # y centre de chaque étape
-
-    BLUE_BG    = "#0f2a4a";  BLUE_BD  = "#2a5a8e";  BLUE_TXT = "#4fc3f7"
-    BLUE_SUB   = "#7aaccf"
-    PURP_BG    = "#1e0f3a";  PURP_BD  = "#4a3a7e";  PURP_TXT = "#b39ddb"
-    PURP_SUB   = "#8877bb"
-    GRAY_BG    = "#1a1a2e";  GRAY_BD  = "#3a3a5e";  GRAY_TXT = "#d0d0ee"
-    GRAY_SUB   = "#8888aa"
-    TEAL_BG    = "#073a2a";  TEAL_BD  = "#1a6a4a";  TEAL_TXT = "#06D6A0"
-    TEAL_SUB   = "#4caf50"
-    ARROW_BLUE = "#4fc3f7";  ARROW_PU = "#b39ddb";  ARROW_FIN = "#06D6A0"
-
-    def draw_box(cx, cy, title, subtitle, bg, border, tc, sc, radius=0.18):
-        """Dessine une boîte arrondie avec titre et sous-titre."""
+    @st.cache_data
+    def generer_pipeline_image():
+        """
+        Génère le diagramme comparatif des deux pipelines sous forme d'image PNG.
+        Utilise Matplotlib avec FancyBboxPatch pour un rendu professionnel.
+        Mis en cache pour ne pas régénérer à chaque interaction.
+        """
+        import io
         from matplotlib.patches import FancyBboxPatch
-        box = FancyBboxPatch(
-            (cx - BOX_W/2, cy - BOX_H/2), BOX_W, BOX_H,
-            boxstyle=f"round,pad=0,rounding_size={radius}",
-            facecolor=bg, edgecolor=border, linewidth=1.2,
-            transform=ax.transData, zorder=3
-        )
-        ax.add_patch(box)
-        ax.text(cx, cy + 0.13, title,    ha="center", va="center",
-                fontsize=11, fontweight="bold", color=tc, zorder=4)
-        ax.text(cx, cy - 0.16, subtitle, ha="center", va="center",
-                fontsize=8.5, color=sc, zorder=4)
 
-    def draw_arrow(cx, y_top, y_bot, color):
-        """Dessine une flèche vers le bas entre deux boîtes."""
-        ax.annotate("",
-            xy=(cx, y_bot + BOX_H/2 + 0.04),
-            xytext=(cx, y_top - BOX_H/2 - 0.04),
-            arrowprops=dict(
-                arrowstyle="-|>", color=color,
-                lw=1.8, mutation_scale=14,
-            ), zorder=5
-        )
+        # ── Canvas ──────────────────────────────────────────────────────────
+        W_fig, H_fig = 22, 20
+        fig_p, ax_p = plt.subplots(figsize=(W_fig, H_fig), facecolor='#080812')
+        ax_p.set_facecolor('#080812')
+        ax_p.set_xlim(0, W_fig)
+        ax_p.set_ylim(0, H_fig)
+        ax_p.axis('off')
 
-    # ── En-têtes des colonnes ──
-    from matplotlib.patches import FancyBboxPatch
-    for cx, bg, bd, txt, label in [
-        (COL_L, BLUE_BG,  BLUE_BD,  BLUE_TXT,  "🎯 Pipeline Classification"),
-        (COL_R, PURP_BG,  PURP_BD,  PURP_TXT,  "🔍 Pipeline Clustering"),
-    ]:
-        hdr = FancyBboxPatch(
-            (cx - BOX_W/2, 12.1), BOX_W, 0.78,
-            boxstyle="round,pad=0,rounding_size=0.18",
-            facecolor=bg, edgecolor=bd, linewidth=1.5, zorder=3
-        )
-        ax.add_patch(hdr)
-        ax.text(cx, 12.5, label, ha="center", va="center",
-                fontsize=12, fontweight="bold", color=txt, zorder=4)
+        # ── Palette de couleurs ──────────────────────────────────────────────
+        PC = {
+            'blue_bg': '#0a1e36', 'blue_bd': '#1e4a80',
+            'blue_hi': '#4fc3f7', 'blue_sub': '#6aabd4',
+            'purp_bg': '#160a2e', 'purp_bd': '#3a1a6e',
+            'purp_hi': '#b39ddb', 'purp_sub': '#8877bb',
+            'gray_bg': '#141424', 'gray_bd': '#2a2a4e',
+            'gray_hi': '#d0d0ee', 'gray_sub': '#8888aa',
+            'teal_bg': '#04261c', 'teal_bd': '#0e5236',
+            'teal_hi': '#00e5a0', 'teal_sub': '#4caf50',
+            'sep':     '#1e1e36',
+            'arr_b':   '#4fc3f7',
+            'arr_p':   '#b39ddb',
+            'arr_t':   '#00e5a0',
+        }
 
-    # ── Séparateur vertical ──
-    ax.plot([7, 7], [0.8, 12.9], color="#2d2d4e",
-            linewidth=1, linestyle=(0, (5, 4)), zorder=1)
+        BOX_W  = 7.8
+        BOX_H  = 1.05
+        CX_L   = 5.1    # centre colonne gauche
+        CX_R   = 16.9   # centre colonne droite
+        SEP_X  = 11.0   # séparateur vertical
+        Y0     = 16.8   # y des headers
+        STEPS_Y = [14.5, 12.5, 10.5, 8.5, 6.5, 4.5]
 
-    # ── Étapes colonne gauche — Classification ──
-    steps_left = [
-        (GRAY_BG, GRAY_BD, GRAY_TXT, GRAY_SUB, "Données MNIST",        "70 000 images 28×28 px"),
-        (BLUE_BG, BLUE_BD, BLUE_TXT, BLUE_SUB, "Split train / val / test", "70% / 15% / 15%"),
-        (BLUE_BG, BLUE_BD, BLUE_TXT, BLUE_SUB, "Normalisation pixels",  "Valeurs ramenées à [0, 1]"),
-        (BLUE_BG, BLUE_BD, BLUE_TXT, BLUE_SUB, "Random Forest",         "n arbres de décision"),
-        (BLUE_BG, BLUE_BD, BLUE_TXT, BLUE_SUB, "Évaluation supervisée", "Accuracy, matrice de confusion, F1"),
-        (TEAL_BG, TEAL_BD, TEAL_TXT, TEAL_SUB, "Feature importance",    "Carte thermique pixels 28×28"),
-    ]
+        # ── Fonctions utilitaires ────────────────────────────────────────────
+        def rbox(cx, cy, w, h, bg, bd, lw=1.4, rx=0.22, zo=3):
+            p = FancyBboxPatch(
+                (cx - w/2, cy - h/2), w, h,
+                boxstyle=f'round,pad=0,rounding_size={rx}',
+                facecolor=bg, edgecolor=bd, linewidth=lw, zorder=zo
+            )
+            ax_p.add_patch(p)
 
-    # ── Étapes colonne droite — Clustering ──
-    steps_right = [
-        (GRAY_BG, GRAY_BD, GRAY_TXT, GRAY_SUB, "Données MNIST (sans labels)", "Apprentissage non supervisé"),
-        (PURP_BG, PURP_BD, PURP_TXT, PURP_SUB, "StandardScaler",              "Centrage et réduction"),
-        (PURP_BG, PURP_BD, PURP_TXT, PURP_SUB, "PCA — réduction de dimension","784 → n composantes principales"),
-        (PURP_BG, PURP_BD, PURP_TXT, PURP_SUB, "K-Means++",                   "K clusters (k-means++, n_init=10)"),
-        (PURP_BG, PURP_BD, PURP_TXT, PURP_SUB, "Évaluation non supervisée",   "Silhouette, ARI, NMI, inertie"),
-        (TEAL_BG, TEAL_BD, TEAL_TXT, TEAL_SUB, "Projection t-SNE 2D",         "Visualisation des clusters en 2D"),
-    ]
+        def txt(cx, cy, t, color, fs=10.5, fw='bold', st='normal', al=1.0):
+            ax_p.text(cx, cy, t, ha='center', va='center',
+                      fontsize=fs, fontweight=fw, color=color,
+                      style=st, alpha=al, zorder=6)
 
-    arrow_colors_l = [ARROW_BLUE, ARROW_BLUE, ARROW_BLUE, ARROW_BLUE, ARROW_FIN]
-    arrow_colors_r = [ARROW_PU,   ARROW_PU,   ARROW_PU,   ARROW_PU,   ARROW_FIN]
+        def arrow_vert(cx, y_from, y_to, color, lw=2.4):
+            ax_p.plot(cx, y_from - BOX_H/2 - 0.04, 'o',
+                      color=color, markersize=4, zorder=11, alpha=0.8)
+            ax_p.plot(cx, y_to + BOX_H/2 + 0.04, 'o',
+                      color=color, markersize=4, zorder=11, alpha=0.8)
+            ax_p.annotate('',
+                xy=(cx, y_to + BOX_H/2 + 0.08),
+                xytext=(cx, y_from - BOX_H/2 - 0.08),
+                arrowprops=dict(
+                    arrowstyle='-|>', color=color,
+                    lw=lw, mutation_scale=18,
+                ), zorder=10
+            )
 
-    for i, (bg, bd, tc, sc, title, sub) in enumerate(steps_left):
-        draw_box(COL_L, STEPS_Y[i], title, sub, bg, bd, tc, sc)
-        if i < len(steps_left) - 1:
-            draw_arrow(COL_L, STEPS_Y[i], STEPS_Y[i+1], arrow_colors_l[i])
+        def side_tag(cx, cy, label, bg, bd, color, side='L'):
+            bw = 1.4
+            tx = (cx - BOX_W/2 - bw/2 - 0.12) if side == 'L' \
+                 else (cx + BOX_W/2 + bw/2 + 0.12)
+            FancyBboxPatch((tx - bw/2, cy - 0.18), bw, 0.36,
+                           boxstyle='round,pad=0,rounding_size=0.08',
+                           facecolor=bg, edgecolor=bd, linewidth=0.8,
+                           zorder=5)
+            tb = FancyBboxPatch((tx - bw/2, cy - 0.18), bw, 0.36,
+                                boxstyle='round,pad=0,rounding_size=0.08',
+                                facecolor=bg, edgecolor=bd, linewidth=0.8,
+                                zorder=5)
+            ax_p.add_patch(tb)
+            ax_p.text(tx, cy, label, ha='center', va='center',
+                      fontsize=7.2, fontweight='bold', color=color, zorder=6)
 
-    for i, (bg, bd, tc, sc, title, sub) in enumerate(steps_right):
-        draw_box(COL_R, STEPS_Y[i], title, sub, bg, bd, tc, sc)
-        if i < len(steps_right) - 1:
-            draw_arrow(COL_R, STEPS_Y[i], STEPS_Y[i+1], arrow_colors_r[i])
+        # ── Fond panneaux colorés (semi-transparents) ────────────────────────
+        for cx, bg, bd in [
+            (CX_L, PC['blue_bg'], PC['blue_bd']),
+            (CX_R, PC['purp_bg'], PC['purp_bd']),
+        ]:
+            panel = FancyBboxPatch(
+                (cx - BOX_W/2 - 0.35, 3.6), BOX_W + 0.7, 13.8,
+                boxstyle='round,pad=0,rounding_size=0.3',
+                facecolor=bg, edgecolor=bd,
+                linewidth=0.6, alpha=0.18, zorder=1
+            )
+            ax_p.add_patch(panel)
 
-    # ── Légende ──
-    legend_y = 2.55
-    leg_box = FancyBboxPatch(
-        (0.3, legend_y - 0.52), 13.4, 1.02,
-        boxstyle="round,pad=0,rounding_size=0.18",
-        facecolor="#0d0d1a", edgecolor="#1e1e3a", linewidth=1, zorder=2
-    )
-    ax.add_patch(leg_box)
-    ax.text(7, legend_y + 0.26, "Légende", ha="center", va="center",
-            fontsize=9, color="#6666aa", zorder=4)
+        # ── Titre général ────────────────────────────────────────────────────
+        rbox(W_fig/2, 19.3, 18.0, 0.95, '#0e0e20', '#2d2d5e', lw=1.5, zo=3)
+        ax_p.text(W_fig/2, 19.3,
+                  'Comparaison des Pipelines : Apprentissage Supervise  vs  Non Supervise',
+                  ha='center', va='center', fontsize=13.5, fontweight='bold',
+                  color='#9090cc', zorder=6, fontfamily='monospace')
 
-    legend_items = [
-        (1.6,  GRAY_BG, GRAY_BD, GRAY_TXT, "Entrée commune"),
-        (4.4,  BLUE_BG, BLUE_BD, BLUE_TXT, "Étape Classification"),
-        (7.8,  PURP_BG, PURP_BD, PURP_TXT, "Étape Clustering"),
-        (11.2, TEAL_BG, TEAL_BD, TEAL_TXT, "Sortie finale"),
-    ]
-    for lx, bg, bd, tc, label in legend_items:
-        sq = FancyBboxPatch(
-            (lx - 0.22, legend_y - 0.34), 0.44, 0.44,
-            boxstyle="round,pad=0,rounding_size=0.06",
-            facecolor=bg, edgecolor=bd, linewidth=0.8, zorder=4
-        )
-        ax.add_patch(sq)
-        ax.text(lx + 0.36, legend_y - 0.12, label, ha="left", va="center",
-                fontsize=8.5, color="#8888aa", zorder=4)
+        # ── Séparateur vertical & VS ─────────────────────────────────────────
+        ax_p.plot([SEP_X, SEP_X], [3.4, 18.2], color=PC['sep'],
+                  linewidth=1.2, linestyle=(0, (6, 4)), zorder=2, alpha=0.8)
+        ax_p.text(SEP_X, 18.55, 'VS', ha='center', va='center',
+                  fontsize=14, fontweight='bold', color='#4a4a7a',
+                  fontfamily='monospace', zorder=5)
 
-    plt.tight_layout(pad=0.3)
+        # ── En-têtes colonnes ────────────────────────────────────────────────
+        for cx, bg, bd, hi, sub, titre, stxt in [
+            (CX_L, PC['blue_bg'], PC['blue_hi'], PC['blue_hi'], PC['blue_sub'],
+             'Pipeline Classification',
+             'Random Forest  *  Apprentissage Supervise'),
+            (CX_R, PC['purp_bg'], PC['purp_hi'], PC['purp_hi'], PC['purp_sub'],
+             'Pipeline Clustering',
+             'PCA + K-Means  *  Apprentissage Non Supervise'),
+        ]:
+            rbox(cx, Y0, BOX_W + 0.5, 1.1, bg, bd, lw=2.0, rx=0.28, zo=4)
+            txt(cx, Y0 + 0.20, titre,  hi,  fs=12.5)
+            txt(cx, Y0 - 0.22, stxt,   sub, fs=9, fw='normal', st='italic')
 
-    # Sauvegarde en mémoire comme PNG
-    import io
-    buf = io.BytesIO()
-    fig.savefig(buf, format="png", dpi=150,
-                facecolor="#0d0d1a", bbox_inches="tight")
-    plt.close(fig)
-    buf.seek(0)
-    return buf
+        # ── Définition des étapes ────────────────────────────────────────────
+        steps_L = [
+            (PC['gray_bg'], PC['gray_bd'], PC['gray_hi'], PC['gray_sub'],
+             'ENTREE', '#5555aa',
+             'Donnees MNIST',
+             '70 000 images etiquetees  *  28x28 px = 784 features',
+             '<-- labels disponibles (0-9)'),
+            (PC['blue_bg'], PC['blue_bd'], PC['blue_hi'], PC['blue_sub'],
+             'ETAPE 1', PC['blue_hi'],
+             'Split Stratifie',
+             'Train 70%  /  Validation 15%  /  Test 15%',
+             '<-- proportions equilibrees par classe'),
+            (PC['blue_bg'], PC['blue_bd'], PC['blue_hi'], PC['blue_sub'],
+             'ETAPE 2', PC['blue_hi'],
+             'Normalisation Pixels',
+             'Division par 255  -->  valeurs dans [0.0, 1.0]',
+             '<-- homogeneise les echelles de valeurs'),
+            (PC['blue_bg'], PC['blue_bd'], PC['blue_hi'], PC['blue_sub'],
+             'ETAPE 3', PC['blue_hi'],
+             'Random Forest Classifier',
+             'n_estimators arbres  *  max_depth limite  *  vote majoritaire',
+             '<-- entraine sur X_train, y_train'),
+            (PC['blue_bg'], PC['blue_bd'], PC['blue_hi'], PC['blue_sub'],
+             'ETAPE 4', PC['blue_hi'],
+             'Evaluation Supervisee',
+             'Accuracy  *  Matrice de confusion  *  F1 par classe',
+             '<-- compare y_pred vs y_test'),
+            (PC['teal_bg'], PC['teal_bd'], PC['teal_hi'], PC['teal_sub'],
+             'SORTIE', PC['teal_hi'],
+             'Feature Importance  &  Predictions finales',
+             'Carte thermique 28x28  *  Accuracy > 97%',
+             '<-- pixels centraux les plus discriminants'),
+        ]
 
-pipeline_img = generer_pipeline_image()
-st.image(pipeline_img, use_container_width=True)
+        steps_R = [
+            (PC['gray_bg'], PC['gray_bd'], PC['gray_hi'], PC['gray_sub'],
+             'ENTREE', '#5555aa',
+             'Donnees MNIST  (sans labels)',
+             '70 000 images  *  28x28 px = 784 features',
+             '<-- labels masques intentionnellement'),
+            (PC['purp_bg'], PC['purp_bd'], PC['purp_hi'], PC['purp_sub'],
+             'ETAPE 1', PC['purp_hi'],
+             'StandardScaler',
+             'Centrage (mean=0)  *  Reduction (std=1) par feature',
+             "<-- elimine les biais d'echelle"),
+            (PC['purp_bg'], PC['purp_bd'], PC['purp_hi'], PC['purp_sub'],
+             'ETAPE 2', PC['purp_hi'],
+             'PCA  --  Reduction de Dimension',
+             '784  -->  n composantes  *  variance maximale conservee',
+             '<-- accelere K-Means & reduit le bruit'),
+            (PC['purp_bg'], PC['purp_bd'], PC['purp_hi'], PC['purp_sub'],
+             'ETAPE 3', PC['purp_hi'],
+             'K-Means++',
+             'K clusters  *  init k-means++  *  n_init=10  *  max_iter=300',
+             "<-- minimise l'inertie intra-cluster"),
+            (PC['purp_bg'], PC['purp_bd'], PC['purp_hi'], PC['purp_sub'],
+             'ETAPE 4', PC['purp_hi'],
+             'Evaluation Non Supervisee',
+             'Silhouette  *  ARI  *  NMI  *  Inertie  *  Elbow Method',
+             '<-- comparaison a posteriori avec y_test'),
+            (PC['teal_bg'], PC['teal_bd'], PC['teal_hi'], PC['teal_sub'],
+             'SORTIE', PC['teal_hi'],
+             'Clusters  &  Projection t-SNE 2D',
+             'Grille des centroïdes  *  Visualisation 2D coloree',
+             '<-- structure retrouvee sans supervision'),
+        ]
+
+        arrow_L = [PC['arr_b'], PC['arr_b'], PC['arr_b'], PC['arr_b'], PC['arr_t']]
+        arrow_R = [PC['arr_p'], PC['arr_p'], PC['arr_p'], PC['arr_p'], PC['arr_t']]
+
+        # ── Dessin des étapes ─────────────────────────────────────────────────
+        for side, steps, CX, arrows in [
+            ('L', steps_L, CX_L, arrow_L),
+            ('R', steps_R, CX_R, arrow_R),
+        ]:
+            for i, (bg, bd, hi, sub, tag_t, tag_c, titre, stxt, detail) in enumerate(steps):
+                cy = STEPS_Y[i]
+
+                # Boîte principale
+                rbox(CX, cy, BOX_W, BOX_H, bg, bd, lw=1.4, zo=3)
+
+                # Tag latéral (ENTREE / ETAPE N / SORTIE)
+                side_tag(CX, cy, tag_t, bg, bd, tag_c, side=side)
+
+                # Textes dans la boîte (3 lignes)
+                txt(CX, cy + 0.26, titre,  hi,    fs=10.5)
+                txt(CX, cy - 0.02, stxt,   sub,   fs=8.2,  fw='normal')
+                txt(CX, cy - 0.28, detail, tag_c, fs=7.5,
+                    fw='normal', st='italic', al=0.85)
+
+                # Flèche vers la boîte suivante
+                if i < len(steps) - 1:
+                    arrow_vert(CX, cy, STEPS_Y[i + 1], arrows[i])
+
+        # ── Légende ──────────────────────────────────────────────────────────
+        leg_y = 2.6
+        rbox(W_fig/2, leg_y - 0.1, W_fig - 1.2, 1.4,
+             '#0c0c1e', '#1e1e3c', lw=1.0, rx=0.25, zo=3)
+        ax_p.text(W_fig/2, leg_y + 0.5, 'Legende',
+                  ha='center', va='center', fontsize=9,
+                  color='#5555aa', fontweight='bold',
+                  fontfamily='monospace', zorder=6)
+
+        legend_items = [
+            (3.0,  PC['gray_bg'], PC['gray_bd'], PC['gray_hi'],  'Entree commune'),
+            (7.2,  PC['blue_bg'], PC['blue_bd'], PC['blue_hi'],  'Etapes Classification'),
+            (11.0, PC['purp_bg'], PC['purp_bd'], PC['purp_hi'],  'Etapes Clustering'),
+            (15.2, PC['teal_bg'], PC['teal_bd'], PC['teal_hi'],  'Sortie finale'),
+            (18.8, '#0a0a16',    '#4a4a7a',      '#6666aa',      'Detail/contexte'),
+        ]
+        for lx, bg, bd, color, lbl in legend_items:
+            sq = FancyBboxPatch(
+                (lx - 0.32, leg_y - 0.22), 0.62, 0.44,
+                boxstyle='round,pad=0,rounding_size=0.07',
+                facecolor=bg, edgecolor=bd, linewidth=0.9, zorder=5
+            )
+            ax_p.add_patch(sq)
+            ax_p.text(lx + 0.48, leg_y - 0.01, lbl,
+                      ha='left', va='center', fontsize=8.5,
+                      color='#9090bb', zorder=6)
+
+        # ── Export PNG en mémoire ─────────────────────────────────────────────
+        plt.tight_layout(pad=0.2)
+        buf = io.BytesIO()
+        fig_p.savefig(buf, format='png', dpi=180,
+                      facecolor='#080812', bbox_inches='tight')
+        plt.close(fig_p)
+        buf.seek(0)
+        return buf
+
+    pipeline_buf = generer_pipeline_image()
+    st.image(pipeline_buf, use_container_width=True,
+             caption="Pipeline comparatif — Classification (gauche) vs Clustering (droite)")
+
+    st.divider()
+
+    # --- Conclusion finale ---
+    st.subheader("📝 Conclusion")
+
+    st.markdown(f"""
+    <div class='custom-box success'>
+        <strong>📌 Synthèse de l'analyse comparative :</strong>
+        <br><br>
+        Sur le dataset MNIST ({n_samples:,} images, sous-échantillon) :
+        <br><br>
+        • Le <strong>Random Forest</strong> atteint une accuracy de <strong>{rf_acc:.2f}%</strong>
+          sur le test set — résultat remarquable pour un modèle sans CNN.
+          Il exploite pleinement la structure des labels.
+        <br><br>
+        • Le <strong>K-Means</strong> (K={n_clusters}) avec PCA à {n_components_pca} composantes
+          obtient un Silhouette Score de <strong>{sil_s:.4f}</strong>, un ARI de <strong>{ari_s:.4f}</strong>
+          et un NMI de <strong>{nmi_s:.4f}</strong>. Ces scores confirment que les clusters
+          retrouvent naturellement une grande partie de la structure des classes,
+          <em>sans jamais voir les labels</em>.
+        <br><br>
+        • La projection <strong>t-SNE</strong> révèle visuellement que les deux approches
+          identifient les mêmes îlots dans l'espace des données.
+    </div>
+    """, unsafe_allow_html=True)
+
+    st.markdown("""
+    <div class='custom-box' style='border-left-color: #b39ddb; margin-top: 16px;'>
+        <strong>💡 Ce que cet exemple nous enseigne :</strong><br><br>
+        Le clustering non supervisé peut découvrir des structures significatives
+        dans les données sans <em>aucune</em> supervision — c'est puissant pour
+        l'exploration de données inconnues. Mais dès que les labels sont disponibles,
+        la classification supervisée surpasse largement le clustering en termes de précision.
+        <br><br>
+        <strong>👉 Ces deux approches sont complémentaires, pas concurrentes.</strong>
+    </div>
+    """, unsafe_allow_html=True)
