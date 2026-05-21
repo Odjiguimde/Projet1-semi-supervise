@@ -1213,139 +1213,148 @@ with tab4:
     # --- Schéma de flux comparatif ---
 st.subheader("🔄 Pipeline Comparatif")
 
-pipeline_svg = """
-<svg width="100%" viewBox="0 0 680 620" role="img"
-     xmlns="http://www.w3.org/2000/svg"
-     style="display:block; margin: 0 auto;">
-  <defs>
-    <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5"
-            markerWidth="6" markerHeight="6" orient="auto-start-reverse">
-      <path d="M2 1L8 5L2 9" fill="none" stroke="#888" stroke-width="1.5"
-            stroke-linecap="round" stroke-linejoin="round"/>
-    </marker>
-  </defs>
+@st.cache_data
+def generer_pipeline_image():
+    """Génère le diagramme pipeline sous forme d'image PNG avec Matplotlib."""
+    
+    fig, ax = plt.subplots(figsize=(14, 13), facecolor="#0d0d1a")
+    ax.set_facecolor("#0d0d1a")
+    ax.set_xlim(0, 14)
+    ax.set_ylim(0, 13)
+    ax.axis("off")
 
-  <!-- TITRES -->
-  <rect x="30"  y="20" width="290" height="36" rx="8" fill="#1a3a5e" stroke="#2a5a8e" stroke-width="0.5"/>
-  <text font-family="DM Sans,sans-serif" font-size="14" font-weight="600"
-        fill="#4fc3f7" x="175" y="38" text-anchor="middle" dominant-baseline="central">🎯 Pipeline Classification</text>
+    # ── Paramètres visuels ──
+    BOX_W      = 5.6
+    BOX_H      = 0.72
+    COL_L      = 1.2    # centre colonne gauche
+    COL_R      = 8.8    # centre colonne droite
+    STEPS_Y    = [10.8, 9.4, 8.0, 6.6, 5.2, 3.8]  # y centre de chaque étape
 
-  <rect x="360" y="20" width="290" height="36" rx="8" fill="#2a1a4e" stroke="#4a3a7e" stroke-width="0.5"/>
-  <text font-family="DM Sans,sans-serif" font-size="14" font-weight="600"
-        fill="#b39ddb" x="505" y="38" text-anchor="middle" dominant-baseline="central">🔍 Pipeline Clustering</text>
+    BLUE_BG    = "#0f2a4a";  BLUE_BD  = "#2a5a8e";  BLUE_TXT = "#4fc3f7"
+    BLUE_SUB   = "#7aaccf"
+    PURP_BG    = "#1e0f3a";  PURP_BD  = "#4a3a7e";  PURP_TXT = "#b39ddb"
+    PURP_SUB   = "#8877bb"
+    GRAY_BG    = "#1a1a2e";  GRAY_BD  = "#3a3a5e";  GRAY_TXT = "#d0d0ee"
+    GRAY_SUB   = "#8888aa"
+    TEAL_BG    = "#073a2a";  TEAL_BD  = "#1a6a4a";  TEAL_TXT = "#06D6A0"
+    TEAL_SUB   = "#4caf50"
+    ARROW_BLUE = "#4fc3f7";  ARROW_PU = "#b39ddb";  ARROW_FIN = "#06D6A0"
 
-  <!-- SÉPARATEUR VERTICAL -->
-  <line x1="340" y1="70" x2="340" y2="520" stroke="#2d2d4e" stroke-width="1" stroke-dasharray="5 4"/>
+    def draw_box(cx, cy, title, subtitle, bg, border, tc, sc, radius=0.18):
+        """Dessine une boîte arrondie avec titre et sous-titre."""
+        from matplotlib.patches import FancyBboxPatch
+        box = FancyBboxPatch(
+            (cx - BOX_W/2, cy - BOX_H/2), BOX_W, BOX_H,
+            boxstyle=f"round,pad=0,rounding_size={radius}",
+            facecolor=bg, edgecolor=border, linewidth=1.2,
+            transform=ax.transData, zorder=3
+        )
+        ax.add_patch(box)
+        ax.text(cx, cy + 0.13, title,    ha="center", va="center",
+                fontsize=11, fontweight="bold", color=tc, zorder=4)
+        ax.text(cx, cy - 0.16, subtitle, ha="center", va="center",
+                fontsize=8.5, color=sc, zorder=4)
 
-  <!-- ══ COLONNE GAUCHE ══ -->
-  <!-- Étape 1 — gris neutre -->
-  <rect x="30" y="84" width="290" height="52" rx="8" fill="#1a1a2e" stroke="#3a3a5e" stroke-width="0.5"/>
-  <text font-family="DM Sans,sans-serif" font-size="14" font-weight="600" fill="#d0d0ee"
-        x="175" y="103" text-anchor="middle" dominant-baseline="central">Données MNIST</text>
-  <text font-family="DM Sans,sans-serif" font-size="12" fill="#8888aa"
-        x="175" y="122" text-anchor="middle" dominant-baseline="central">70 000 images 28×28 px</text>
-  <line x1="175" y1="136" x2="175" y2="156" stroke="#888" stroke-width="1.5" marker-end="url(#arrow)"/>
+    def draw_arrow(cx, y_top, y_bot, color):
+        """Dessine une flèche vers le bas entre deux boîtes."""
+        ax.annotate("",
+            xy=(cx, y_bot + BOX_H/2 + 0.04),
+            xytext=(cx, y_top - BOX_H/2 - 0.04),
+            arrowprops=dict(
+                arrowstyle="-|>", color=color,
+                lw=1.8, mutation_scale=14,
+            ), zorder=5
+        )
 
-  <!-- Étape 2 -->
-  <rect x="30" y="158" width="290" height="52" rx="8" fill="#0f2a4a" stroke="#2a5a8e" stroke-width="0.5"/>
-  <text font-family="DM Sans,sans-serif" font-size="14" font-weight="600" fill="#4fc3f7"
-        x="175" y="177" text-anchor="middle" dominant-baseline="central">Split train / val / test</text>
-  <text font-family="DM Sans,sans-serif" font-size="12" fill="#7aaccf"
-        x="175" y="196" text-anchor="middle" dominant-baseline="central">70% / 15% / 15%</text>
-  <line x1="175" y1="210" x2="175" y2="230" stroke="#4fc3f7" stroke-width="1.5" marker-end="url(#arrow)"/>
+    # ── En-têtes des colonnes ──
+    from matplotlib.patches import FancyBboxPatch
+    for cx, bg, bd, txt, label in [
+        (COL_L, BLUE_BG,  BLUE_BD,  BLUE_TXT,  "🎯 Pipeline Classification"),
+        (COL_R, PURP_BG,  PURP_BD,  PURP_TXT,  "🔍 Pipeline Clustering"),
+    ]:
+        hdr = FancyBboxPatch(
+            (cx - BOX_W/2, 12.1), BOX_W, 0.78,
+            boxstyle="round,pad=0,rounding_size=0.18",
+            facecolor=bg, edgecolor=bd, linewidth=1.5, zorder=3
+        )
+        ax.add_patch(hdr)
+        ax.text(cx, 12.5, label, ha="center", va="center",
+                fontsize=12, fontweight="bold", color=txt, zorder=4)
 
-  <!-- Étape 3 -->
-  <rect x="30" y="232" width="290" height="52" rx="8" fill="#0f2a4a" stroke="#2a5a8e" stroke-width="0.5"/>
-  <text font-family="DM Sans,sans-serif" font-size="14" font-weight="600" fill="#4fc3f7"
-        x="175" y="251" text-anchor="middle" dominant-baseline="central">Normalisation pixels</text>
-  <text font-family="DM Sans,sans-serif" font-size="12" fill="#7aaccf"
-        x="175" y="270" text-anchor="middle" dominant-baseline="central">Valeurs ramenées à [0, 1]</text>
-  <line x1="175" y1="284" x2="175" y2="304" stroke="#4fc3f7" stroke-width="1.5" marker-end="url(#arrow)"/>
+    # ── Séparateur vertical ──
+    ax.plot([7, 7], [0.8, 12.9], color="#2d2d4e",
+            linewidth=1, linestyle=(0, (5, 4)), zorder=1)
 
-  <!-- Étape 4 -->
-  <rect x="30" y="306" width="290" height="52" rx="8" fill="#0f2a4a" stroke="#2a5a8e" stroke-width="0.5"/>
-  <text font-family="DM Sans,sans-serif" font-size="14" font-weight="600" fill="#4fc3f7"
-        x="175" y="325" text-anchor="middle" dominant-baseline="central">Random Forest</text>
-  <text font-family="DM Sans,sans-serif" font-size="12" fill="#7aaccf"
-        x="175" y="344" text-anchor="middle" dominant-baseline="central">n arbres de décision</text>
-  <line x1="175" y1="358" x2="175" y2="378" stroke="#4fc3f7" stroke-width="1.5" marker-end="url(#arrow)"/>
+    # ── Étapes colonne gauche — Classification ──
+    steps_left = [
+        (GRAY_BG, GRAY_BD, GRAY_TXT, GRAY_SUB, "Données MNIST",        "70 000 images 28×28 px"),
+        (BLUE_BG, BLUE_BD, BLUE_TXT, BLUE_SUB, "Split train / val / test", "70% / 15% / 15%"),
+        (BLUE_BG, BLUE_BD, BLUE_TXT, BLUE_SUB, "Normalisation pixels",  "Valeurs ramenées à [0, 1]"),
+        (BLUE_BG, BLUE_BD, BLUE_TXT, BLUE_SUB, "Random Forest",         "n arbres de décision"),
+        (BLUE_BG, BLUE_BD, BLUE_TXT, BLUE_SUB, "Évaluation supervisée", "Accuracy, matrice de confusion, F1"),
+        (TEAL_BG, TEAL_BD, TEAL_TXT, TEAL_SUB, "Feature importance",    "Carte thermique pixels 28×28"),
+    ]
 
-  <!-- Étape 5 -->
-  <rect x="30" y="380" width="290" height="52" rx="8" fill="#0f2a4a" stroke="#2a5a8e" stroke-width="0.5"/>
-  <text font-family="DM Sans,sans-serif" font-size="14" font-weight="600" fill="#4fc3f7"
-        x="175" y="399" text-anchor="middle" dominant-baseline="central">Évaluation supervisée</text>
-  <text font-family="DM Sans,sans-serif" font-size="12" fill="#7aaccf"
-        x="175" y="418" text-anchor="middle" dominant-baseline="central">Accuracy, matrice de confusion, F1</text>
-  <line x1="175" y1="432" x2="175" y2="452" stroke="#06D6A0" stroke-width="1.5" marker-end="url(#arrow)"/>
+    # ── Étapes colonne droite — Clustering ──
+    steps_right = [
+        (GRAY_BG, GRAY_BD, GRAY_TXT, GRAY_SUB, "Données MNIST (sans labels)", "Apprentissage non supervisé"),
+        (PURP_BG, PURP_BD, PURP_TXT, PURP_SUB, "StandardScaler",              "Centrage et réduction"),
+        (PURP_BG, PURP_BD, PURP_TXT, PURP_SUB, "PCA — réduction de dimension","784 → n composantes principales"),
+        (PURP_BG, PURP_BD, PURP_TXT, PURP_SUB, "K-Means++",                   "K clusters (k-means++, n_init=10)"),
+        (PURP_BG, PURP_BD, PURP_TXT, PURP_SUB, "Évaluation non supervisée",   "Silhouette, ARI, NMI, inertie"),
+        (TEAL_BG, TEAL_BD, TEAL_TXT, TEAL_SUB, "Projection t-SNE 2D",         "Visualisation des clusters en 2D"),
+    ]
 
-  <!-- Étape 6 finale (teal) -->
-  <rect x="30" y="454" width="290" height="52" rx="8" fill="#073a2a" stroke="#1a6a4a" stroke-width="0.5"/>
-  <text font-family="DM Sans,sans-serif" font-size="14" font-weight="600" fill="#06D6A0"
-        x="175" y="473" text-anchor="middle" dominant-baseline="central">Feature importance</text>
-  <text font-family="DM Sans,sans-serif" font-size="12" fill="#4caf50"
-        x="175" y="492" text-anchor="middle" dominant-baseline="central">Carte thermique pixels 28×28</text>
+    arrow_colors_l = [ARROW_BLUE, ARROW_BLUE, ARROW_BLUE, ARROW_BLUE, ARROW_FIN]
+    arrow_colors_r = [ARROW_PU,   ARROW_PU,   ARROW_PU,   ARROW_PU,   ARROW_FIN]
 
-  <!-- ══ COLONNE DROITE ══ -->
-  <!-- Étape 1 — gris neutre -->
-  <rect x="360" y="84" width="290" height="52" rx="8" fill="#1a1a2e" stroke="#3a3a5e" stroke-width="0.5"/>
-  <text font-family="DM Sans,sans-serif" font-size="14" font-weight="600" fill="#d0d0ee"
-        x="505" y="103" text-anchor="middle" dominant-baseline="central">Données MNIST (sans labels)</text>
-  <text font-family="DM Sans,sans-serif" font-size="12" fill="#8888aa"
-        x="505" y="122" text-anchor="middle" dominant-baseline="central">Apprentissage non supervisé</text>
-  <line x1="505" y1="136" x2="505" y2="156" stroke="#888" stroke-width="1.5" marker-end="url(#arrow)"/>
+    for i, (bg, bd, tc, sc, title, sub) in enumerate(steps_left):
+        draw_box(COL_L, STEPS_Y[i], title, sub, bg, bd, tc, sc)
+        if i < len(steps_left) - 1:
+            draw_arrow(COL_L, STEPS_Y[i], STEPS_Y[i+1], arrow_colors_l[i])
 
-  <!-- Étape 2 -->
-  <rect x="360" y="158" width="290" height="52" rx="8" fill="#1e0f3a" stroke="#4a3a7e" stroke-width="0.5"/>
-  <text font-family="DM Sans,sans-serif" font-size="14" font-weight="600" fill="#b39ddb"
-        x="505" y="177" text-anchor="middle" dominant-baseline="central">StandardScaler</text>
-  <text font-family="DM Sans,sans-serif" font-size="12" fill="#8877bb"
-        x="505" y="196" text-anchor="middle" dominant-baseline="central">Centrage et réduction</text>
-  <line x1="505" y1="210" x2="505" y2="230" stroke="#b39ddb" stroke-width="1.5" marker-end="url(#arrow)"/>
+    for i, (bg, bd, tc, sc, title, sub) in enumerate(steps_right):
+        draw_box(COL_R, STEPS_Y[i], title, sub, bg, bd, tc, sc)
+        if i < len(steps_right) - 1:
+            draw_arrow(COL_R, STEPS_Y[i], STEPS_Y[i+1], arrow_colors_r[i])
 
-  <!-- Étape 3 -->
-  <rect x="360" y="232" width="290" height="52" rx="8" fill="#1e0f3a" stroke="#4a3a7e" stroke-width="0.5"/>
-  <text font-family="DM Sans,sans-serif" font-size="14" font-weight="600" fill="#b39ddb"
-        x="505" y="251" text-anchor="middle" dominant-baseline="central">PCA — réduction de dimension</text>
-  <text font-family="DM Sans,sans-serif" font-size="12" fill="#8877bb"
-        x="505" y="270" text-anchor="middle" dominant-baseline="central">784 → n composantes principales</text>
-  <line x1="505" y1="284" x2="505" y2="304" stroke="#b39ddb" stroke-width="1.5" marker-end="url(#arrow)"/>
+    # ── Légende ──
+    legend_y = 2.55
+    leg_box = FancyBboxPatch(
+        (0.3, legend_y - 0.52), 13.4, 1.02,
+        boxstyle="round,pad=0,rounding_size=0.18",
+        facecolor="#0d0d1a", edgecolor="#1e1e3a", linewidth=1, zorder=2
+    )
+    ax.add_patch(leg_box)
+    ax.text(7, legend_y + 0.26, "Légende", ha="center", va="center",
+            fontsize=9, color="#6666aa", zorder=4)
 
-  <!-- Étape 4 -->
-  <rect x="360" y="306" width="290" height="52" rx="8" fill="#1e0f3a" stroke="#4a3a7e" stroke-width="0.5"/>
-  <text font-family="DM Sans,sans-serif" font-size="14" font-weight="600" fill="#b39ddb"
-        x="505" y="325" text-anchor="middle" dominant-baseline="central">K-Means++</text>
-  <text font-family="DM Sans,sans-serif" font-size="12" fill="#8877bb"
-        x="505" y="344" text-anchor="middle" dominant-baseline="central">K clusters (k-means++, n_init=10)</text>
-  <line x1="505" y1="358" x2="505" y2="378" stroke="#b39ddb" stroke-width="1.5" marker-end="url(#arrow)"/>
+    legend_items = [
+        (1.6,  GRAY_BG, GRAY_BD, GRAY_TXT, "Entrée commune"),
+        (4.4,  BLUE_BG, BLUE_BD, BLUE_TXT, "Étape Classification"),
+        (7.8,  PURP_BG, PURP_BD, PURP_TXT, "Étape Clustering"),
+        (11.2, TEAL_BG, TEAL_BD, TEAL_TXT, "Sortie finale"),
+    ]
+    for lx, bg, bd, tc, label in legend_items:
+        sq = FancyBboxPatch(
+            (lx - 0.22, legend_y - 0.34), 0.44, 0.44,
+            boxstyle="round,pad=0,rounding_size=0.06",
+            facecolor=bg, edgecolor=bd, linewidth=0.8, zorder=4
+        )
+        ax.add_patch(sq)
+        ax.text(lx + 0.36, legend_y - 0.12, label, ha="left", va="center",
+                fontsize=8.5, color="#8888aa", zorder=4)
 
-  <!-- Étape 5 -->
-  <rect x="360" y="380" width="290" height="52" rx="8" fill="#1e0f3a" stroke="#4a3a7e" stroke-width="0.5"/>
-  <text font-family="DM Sans,sans-serif" font-size="14" font-weight="600" fill="#b39ddb"
-        x="505" y="399" text-anchor="middle" dominant-baseline="central">Évaluation non supervisée</text>
-  <text font-family="DM Sans,sans-serif" font-size="12" fill="#8877bb"
-        x="505" y="418" text-anchor="middle" dominant-baseline="central">Silhouette, ARI, NMI, inertie</text>
-  <line x1="505" y1="432" x2="505" y2="452" stroke="#06D6A0" stroke-width="1.5" marker-end="url(#arrow)"/>
+    plt.tight_layout(pad=0.3)
 
-  <!-- Étape 6 finale (teal) -->
-  <rect x="360" y="454" width="290" height="52" rx="8" fill="#073a2a" stroke="#1a6a4a" stroke-width="0.5"/>
-  <text font-family="DM Sans,sans-serif" font-size="14" font-weight="600" fill="#06D6A0"
-        x="505" y="473" text-anchor="middle" dominant-baseline="central">Projection t-SNE 2D</text>
-  <text font-family="DM Sans,sans-serif" font-size="12" fill="#4caf50"
-        x="505" y="492" text-anchor="middle" dominant-baseline="central">Visualisation des clusters en 2D</text>
+    # Sauvegarde en mémoire comme PNG
+    import io
+    buf = io.BytesIO()
+    fig.savefig(buf, format="png", dpi=150,
+                facecolor="#0d0d1a", bbox_inches="tight")
+    plt.close(fig)
+    buf.seek(0)
+    return buf
 
-  <!-- LÉGENDE -->
-  <rect x="30" y="534" width="620" height="58" rx="8" fill="#0d0d1a" stroke="#1e1e3a" stroke-width="0.5"/>
-  <text font-family="DM Sans,sans-serif" font-size="11" fill="#6666aa"
-        x="340" y="549" text-anchor="middle" dominant-baseline="central">Légende</text>
-  <rect x="60"  y="558" width="12" height="12" rx="2" fill="#1a1a2e" stroke="#3a3a5e"/>
-  <text font-family="DM Sans,sans-serif" font-size="11" fill="#8888aa" x="80"  y="565">Entrée commune</text>
-  <rect x="200" y="558" width="12" height="12" rx="2" fill="#0f2a4a" stroke="#2a5a8e"/>
-  <text font-family="DM Sans,sans-serif" font-size="11" fill="#8888aa" x="220" y="565">Étape Classification</text>
-  <rect x="380" y="558" width="12" height="12" rx="2" fill="#1e0f3a" stroke="#4a3a7e"/>
-  <text font-family="DM Sans,sans-serif" font-size="11" fill="#8888aa" x="400" y="565">Étape Clustering</text>
-  <rect x="540" y="558" width="12" height="12" rx="2" fill="#073a2a" stroke="#1a6a4a"/>
-  <text font-family="DM Sans,sans-serif" font-size="11" fill="#8888aa" x="560" y="565">Sortie finale</text>
-</svg>
-"""
-
-st.markdown(pipeline_svg, unsafe_allow_html=True)
+pipeline_img = generer_pipeline_image()
+st.image(pipeline_img, use_container_width=True)
