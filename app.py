@@ -1217,107 +1217,161 @@ col_pipe1, col_pipe2 = st.columns(2)
 
 with col_pipe1:
     st.markdown(f"""
-    <div style='background: linear-gradient(180deg, #0a1628, #1a2a4e);
+    <div style='background: linear-gradient(135deg, #0a1628 0%, #0d1f3a 100%);
                 border: 1px solid #2a4a8e;
-                border-radius: 12px;
-                padding: 20px;
-                min-height: 420px;'>
-        <div style='color: #4fc3f7;
-                    font-weight: 700;
-                    font-size: 1rem;
-                    margin-bottom: 16px;
-                    text-align: center;'>
-            🎯 Pipeline Classification
+                border-radius: 16px;
+                padding: 24px 20px;
+                min-height: 520px;
+                box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+                transition: transform 0.3s ease;'>
+        <div style='border-bottom: 2px solid #4fc3f7;
+                    padding-bottom: 12px;
+                    margin-bottom: 20px;'>
+            <div style='color: #4fc3f7;
+                        font-weight: 800;
+                        font-size: 1.2rem;
+                        text-align: center;
+                        letter-spacing: 1px;'>
+                🎯 PIPELINE CLASSIFICATION
+            </div>
+            <div style='color: #7f8c9a;
+                        font-size: 0.75rem;
+                        text-align: center;
+                        margin-top: 6px;'>
+                Apprentissage Supervisé
+            </div>
         </div>
         <div style='color: #d0d0ee;
-                    font-size: 0.92rem;
-                    line-height: 2;
-                    text-align: center;'>
-            📦 <strong>Données MNIST</strong><br>
-            ⬇️<br>
-            ✂️ <strong>Split</strong><br>
-            ⬇️<br>
-            🔢 <strong>Normalisation</strong><br>
-            ⬇️<br>
-            🌲 <strong>Random Forest</strong><br>
-            ({n_estimators} arbres)<br>
-            ⬇️<br>
-            📊 <strong>Évaluation</strong><br>
-            Accuracy • Matrice • F1<br>
-            ⬇️<br>
-            🔥 <strong>Feature Importance</strong>
+                    font-size: 0.9rem;
+                    line-height: 2.2;'>
+            <div style='display: flex; align-items: center; justify-content: space-between; margin: 8px 0;'>
+                <span>📦 Données MNIST</span>
+                <span style='color: #4fc3f7; font-size: 1.1rem;'>→</span>
+            </div>
+            <div style='background: #0d2a4a; border-radius: 6px; padding: 6px 12px; margin: 8px 0;'>
+                <span>✂️ Split (70/15/15)</span>
+                <span style='float: right; color: #4fc3f7; font-size: 1.1rem;'>→</span>
+            </div>
+            <div style='background: #0d2a4a; border-radius: 6px; padding: 6px 12px; margin: 8px 0;'>
+                <span>🔢 Normalisation [0,1]</span>
+                <span style='float: right; color: #4fc3f7; font-size: 1.1rem;'>→</span>
+            </div>
+            <div style='background: linear-gradient(90deg, #1a3a5e, #0d2a4a); border-radius: 8px; padding: 10px 12px; margin: 12px 0; border-left: 3px solid #4fc3f7;'>
+                <span style='font-weight: 700;'>🌲 Random Forest</span><br>
+                <span style='font-size: 0.75rem; color: #a0b0cc;'>• {n_estimators} arbres<br>• max_depth={max_depth}<br>• n_jobs=-1</span>
+                <span style='float: right; color: #4fc3f7; font-size: 1.1rem; margin-top: 8px;'>→</span>
+            </div>
+            <div style='background: #0d2a4a; border-radius: 6px; padding: 6px 12px; margin: 8px 0;'>
+                <span>📊 Évaluation</span>
+                <span style='float: right; color: #4fc3f7; font-size: 1.1rem;'>→</span>
+            </div>
+            <div style='background: #0d2a4a; border-radius: 6px; padding: 6px 12px; margin: 8px 0;'>
+                <span>🎯 Accuracy • Matrice • F1</span>
+                <span style='float: right; color: #4fc3f7; font-size: 1.1rem;'>→</span>
+            </div>
+            <div style='background: linear-gradient(90deg, #4fc3f7, #1a3a5e); border-radius: 8px; padding: 8px 12px; margin: 12px 0; text-align: center;'>
+                <span style='font-weight: 700; color: #0a1628;'>🔥 Feature Importance</span>
+            </div>
         </div>
     </div>
     """, unsafe_allow_html=True)
 
 with col_pipe2:
     st.markdown(f"""
-    <div style='background: linear-gradient(180deg, #1a0a28, #2e1a4e);
+    <div style='background: linear-gradient(135deg, #1a0a28 0%, #2a1a3e 100%);
                 border: 1px solid #6a2a8e;
-                border-radius: 12px;
-                padding: 20px;
-                min-height: 420px;'>
-        <div style='color: #b39ddb;
-                    font-weight: 700;
-                    font-size: 1rem;
-                    margin-bottom: 16px;
-                    text-align: center;'>
-            🔍 Pipeline Clustering
+                border-radius: 16px;
+                padding: 24px 20px;
+                min-height: 520px;
+                box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+                transition: transform 0.3s ease;'>
+        <div style='border-bottom: 2px solid #b39ddb;
+                    padding-bottom: 12px;
+                    margin-bottom: 20px;'>
+            <div style='color: #b39ddb;
+                        font-weight: 800;
+                        font-size: 1.2rem;
+                        text-align: center;
+                        letter-spacing: 1px;'>
+                🔍 PIPELINE CLUSTERING
+            </div>
+            <div style='color: #7f8c9a;
+                        font-size: 0.75rem;
+                        text-align: center;
+                        margin-top: 6px;'>
+                Apprentissage Non Supervisé
+            </div>
         </div>
         <div style='color: #d0d0ee;
-                    font-size: 0.92rem;
-                    line-height: 2;
-                    text-align: center;'>
-            📦 <strong>Données MNIST</strong><br>
-            ⬇️<br>
-            🔢 <strong>StandardScaler</strong><br>
-            ⬇️<br>
-            📉 <strong>PCA</strong><br>
-            784 → {n_components_pca}<br>
-            ⬇️<br>
-            🔵 <strong>K-Means++</strong><br>
-            K = {n_clusters}<br>
-            ⬇️<br>
-            📊 <strong>Évaluation</strong><br>
-            Silhouette • ARI • NMI<br>
-            ⬇️<br>
-            🗺️ <strong>t-SNE</strong>
+                    font-size: 0.9rem;
+                    line-height: 2.2;'>
+            <div style='display: flex; align-items: center; justify-content: space-between; margin: 8px 0;'>
+                <span>📦 Données MNIST</span>
+                <span style='color: #b39ddb; font-size: 1.1rem;'>→</span>
+            </div>
+            <div style='background: #2a1a4e; border-radius: 6px; padding: 6px 12px; margin: 8px 0;'>
+                <span>🔢 StandardScaler</span>
+                <span style='float: right; color: #b39ddb; font-size: 1.1rem;'>→</span>
+            </div>
+            <div style='background: linear-gradient(90deg, #3a2a5e, #2a1a4e); border-radius: 8px; padding: 10px 12px; margin: 12px 0; border-left: 3px solid #b39ddb;'>
+                <span style='font-weight: 700;'>📉 PCA (Réduction)</span><br>
+                <span style='font-size: 0.75rem; color: #c0b0dc;'>• 784 → {n_components_pca} composantes<br>• Variance expliquée<br>• Centrage-réduction</span>
+                <span style='float: right; color: #b39ddb; font-size: 1.1rem; margin-top: 8px;'>→</span>
+            </div>
+            <div style='background: linear-gradient(90deg, #4a3a7e, #2a1a4e); border-radius: 8px; padding: 10px 12px; margin: 12px 0; border-left: 3px solid #FFB703;'>
+                <span style='font-weight: 700;'>🔵 K-Means++</span><br>
+                <span style='font-size: 0.75rem; color: #c0b0dc;'>• K = {n_clusters} clusters<br>• n_init=10 • max_iter=300<br>• k-means++ initialization</span>
+                <span style='float: right; color: #b39ddb; font-size: 1.1rem; margin-top: 8px;'>→</span>
+            </div>
+            <div style='background: #2a1a4e; border-radius: 6px; padding: 6px 12px; margin: 8px 0;'>
+                <span>📊 Évaluation</span>
+                <span style='float: right; color: #b39ddb; font-size: 1.1rem;'>→</span>
+            </div>
+            <div style='background: #2a1a4e; border-radius: 6px; padding: 6px 12px; margin: 8px 0;'>
+                <span>🔷 Silhouette • ARI • NMI • Inertie</span>
+                <span style='float: right; color: #b39ddb; font-size: 1.1rem;'>→</span>
+            </div>
+            <div style='background: linear-gradient(90deg, #b39ddb, #3a2a5e); border-radius: 8px; padding: 8px 12px; margin: 12px 0; text-align: center;'>
+                <span style='font-weight: 700; color: #1a0a28;'>🗺️ t-SNE Visualization</span>
+            </div>
         </div>
     </div>
     """, unsafe_allow_html=True)
 
-    # --- Conclusion finale ---
-  st.subheader("📝 Conclusion")
+st.divider()
 
-    st.markdown(f"""
-    <div class='custom-box success'>
-        <strong>📌 Synthèse de l'analyse comparative :</strong>
-        <br><br>
-        Sur le dataset MNIST ({n_samples:,} images, sous-échantillon) :
-        <br><br>
-        • Le <strong>Random Forest</strong> atteint une accuracy de <strong>{rf_acc:.2f}%</strong>
-          sur le test set — résultat remarquable pour un modèle sans CNN.
-          Il exploite pleinement la structure des labels.
-        <br><br>
-        • Le <strong>K-Means</strong> (K={n_clusters}) avec PCA à {n_components_pca} composantes
-          obtient un Silhouette Score de <strong>{sil_s:.4f}</strong>, un ARI de <strong>{ari_s:.4f}</strong>
-          et un NMI de <strong>{nmi_s:.4f}</strong>. Ces scores confirment que les clusters
-          retrouvent naturellement une grande partie de la structure des classes,
-          <em>sans jamais voir les labels</em>.
-        <br><br>
-        • La projection <strong>t-SNE</strong> révèle visuellement que les deux approches
-          identifient les mêmes îlots dans l'espace des données.
-    </div>
-    """, unsafe_allow_html=True)
+# --- Conclusion finale ---
+st.subheader("📝 Conclusion")
 
-    st.markdown("""
-    <div class='custom-box' style='border-left-color: #b39ddb; margin-top: 16px;'>
-        <strong>💡 Ce que cet exemple nous enseigne :</strong><br><br>
-        Le clustering non supervisé peut découvrir des structures significatives
-        dans les données sans <em>aucune</em> supervision — c'est puissant pour
-        l'exploration de données inconnues. Mais dès que les labels sont disponibles,
-        la classification supervisée surpasse largement le clustering en termes de précision.
-        <br><br>
-        <strong>👉 Ces deux approches sont complémentaires, pas concurrentes.</strong>
-    </div>
-    """, unsafe_allow_html=True)
+st.markdown(f"""
+<div class='custom-box success'>
+    <strong>📌 Synthèse de l'analyse comparative :</strong>
+    <br><br>
+    Sur le dataset MNIST ({n_samples:,} images, sous-échantillon) :
+    <br><br>
+    • Le <strong>Random Forest</strong> atteint une accuracy de <strong>{rf_acc:.2f}%</strong>
+      sur le test set — résultat remarquable pour un modèle sans CNN.
+      Il exploite pleinement la structure des labels.
+    <br><br>
+    • Le <strong>K-Means</strong> (K={n_clusters}) avec PCA à {n_components_pca} composantes
+      obtient un Silhouette Score de <strong>{sil_s:.4f}</strong>, un ARI de <strong>{ari_s:.4f}</strong>
+      et un NMI de <strong>{nmi_s:.4f}</strong>. Ces scores confirment que les clusters
+      retrouvent naturellement une grande partie de la structure des classes,
+      <em>sans jamais voir les labels</em>.
+    <br><br>
+    • La projection <strong>t-SNE</strong> révèle visuellement que les deux approches
+      identifient les mêmes îlots dans l'espace des données.
+</div>
+""", unsafe_allow_html=True)
+
+st.markdown("""
+<div class='custom-box' style='border-left-color: #b39ddb; margin-top: 16px;'>
+    <strong>💡 Ce que cet exemple nous enseigne :</strong><br><br>
+    Le clustering non supervisé peut découvrir des structures significatives
+    dans les données sans <em>aucune</em> supervision — c'est puissant pour
+    l'exploration de données inconnues. Mais dès que les labels sont disponibles,
+    la classification supervisée surpasse largement le clustering en termes de précision.
+    <br><br>
+    <strong>👉 Ces deux approches sont complémentaires, pas concurrentes.</strong>
+</div>
+""", unsafe_allow_html=True)
