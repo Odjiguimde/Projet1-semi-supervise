@@ -1068,29 +1068,7 @@ with tab3:
 # ════════════════════════════════════════════════════════════════════════════
 # ONGLET 4 — CONCLUSION & COMPARATIF
 # ════════════════════════════════════════════════════════════════════════════
-# ════════════════════════════════════════════════════════════════════════════
-# ONGLET 4 — CONCLUSION & COMPARATIF
-# ════════════════════════════════════════════════════════════════════════════
 with tab4:
-    # --- Récupération des métriques pour les pipelines ---
-    try:
-        pca_model, _, _, _, _, _, _, _, _ = entrainer_clustering(n_components_pca, n_clusters, n_samples)
-        cumvar_pca = np.cumsum(pca_model.explained_variance_ratio_)[-1] * 100
-    except:
-        cumvar_pca = 85.0
-    
-    try:
-        rf_acc = accuracy_score(y_test, test_pred) * 100
-    except Exception:
-        rf_acc = 97.0
-    
-    try:
-        _, _, _, _, _, _, sil_s, ari_s, nmi_s = entrainer_clustering(
-            n_components_pca, n_clusters, n_samples
-        )
-    except Exception:
-        sil_s, ari_s, nmi_s = 0.12, 0.50, 0.62
-  
     st.subheader("🧭 Tableau de Bord Comparatif Final")
 
     # Récupération des métriques pour le résumé
@@ -1231,276 +1209,92 @@ with tab4:
         st.markdown("</div>", unsafe_allow_html=True)
 
     st.divider()
-      
-      # --- Schéma de flux comparatif ---
-st.subheader("🔄 Pipeline Comparatif")
 
-col_pipe1, col_pipe2 = st.columns(2)
+    # --- Schéma de flux comparatif ---
+    st.subheader("🔄 Pipeline Comparatif")
 
-with col_pipe1:
     st.markdown("""
-    <div style='background: linear-gradient(135deg, #0a0f1e 0%, #0d1528 100%);
-                border: 1px solid #2a3a6e;
-                border-radius: 20px;
-                overflow: hidden;
-                box-shadow: 0 8px 32px rgba(0,0,0,0.3);'>
-    """, unsafe_allow_html=True)
-    
-    st.markdown("""
-    <div style='background: linear-gradient(135deg, #1a2a4e, #0d1a30);
-                padding: 16px 20px;
-                border-bottom: 2px solid #4fc3f7;'>
-        <div style='color: #4fc3f7; font-weight: 800; font-size: 1.1rem; letter-spacing: 1.5px;'>
-            🎯 APPRENTISSAGE SUPERVISÉ
-        </div>
-        <div style='color: #7a8aaa; font-size: 0.7rem; margin-top: 4px;'>
-            RANDOM FOREST CLASSIFIER
-        </div>
-    </div>
-    """, unsafe_allow_html=True)
-    
-    st.markdown("<div style='padding: 20px;'>", unsafe_allow_html=True)
-    
-    # Étape 1
-    st.markdown("""
-    <div style='background: #0d1a30; border-radius: 12px; padding: 12px 16px; margin-bottom: 16px; border-left: 3px solid #4fc3f7;'>
-        <div style='display: flex; align-items: center; justify-content: space-between;'>
-            <div>
-                <span style='color: #ffd966; font-size: 0.7rem; font-weight: 600;'># PRÉPARATION DES DONNÉES</span>
-                <div style='color: #ffffff; font-weight: 600; margin-top: 4px;'>📦 Images MNIST Brutes</div>
-                <div style='color: #a0b0cc; font-size: 0.75rem;'>28×28 pixels + Étiquettes</div>
-            </div>
-            <div style='color: #4fc3f7; font-size: 1.3rem;'>↓</div>
-        </div>
-    </div>
-    """, unsafe_allow_html=True)
-    
-    # Étape 2
-    st.markdown("""
-    <div style='background: #0d1a30; border-radius: 12px; padding: 12px 16px; margin-bottom: 16px; border-left: 3px solid #4fc3f7;'>
-        <div style='display: flex; align-items: center; justify-content: space-between;'>
-            <div>
-                <span style='color: #ffd966; font-size: 0.7rem; font-weight: 600;'># DIVISION DES DONNÉES</span>
-                <div style='color: #ffffff; font-weight: 500; margin-top: 4px;'>✂️ train_test_split</div>
-            </div>
-            <div style='color: #4fc3f7; font-size: 1.3rem;'>↓</div>
-        </div>
-    </div>
-    """, unsafe_allow_html=True)
-    
-    # Étape 3
-    st.markdown(f"""
-    <div style='display: flex; gap: 12px; margin-bottom: 16px;'>
-        <div style='flex: 1; background: #0a1222; border-radius: 10px; padding: 10px; text-align: center; border: 1px solid #2a3a5e;'>
-            <span style='color: #ffd966; font-size: 0.65rem; font-weight: 600;'>ENTRAÎNEMENT</span>
-            <div style='color: #a0b0cc; font-size: 0.75rem; margin-top: 4px;'>🏋️ 70%</div>
-        </div>
-        <div style='flex: 1; background: #0a1222; border-radius: 10px; padding: 10px; text-align: center; border: 1px solid #2a3a5e;'>
-            <span style='color: #ffd966; font-size: 0.65rem; font-weight: 600;'>TEST</span>
-            <div style='color: #a0b0cc; font-size: 0.75rem; margin-top: 4px;'>🧪 30%</div>
-        </div>
-    </div>
-    """, unsafe_allow_html=True)
-    
-    st.markdown("<div style='text-align: center; margin: 8px 0; color: #4fc3f7; font-size: 1.2rem;'>↓</div>", unsafe_allow_html=True)
-    
-    # Étape 4
-    st.markdown(f"""
-    <div style='background: linear-gradient(135deg, #0d1a30, #0a1222); border-radius: 12px; padding: 12px 16px; margin-bottom: 16px; border: 1px solid #3a5a8e;'>
-        <div style='display: flex; align-items: center; justify-content: space-between;'>
-            <div>
-                <span style='color: #ffd966; font-size: 0.7rem; font-weight: 600;'># APPRENTISSAGE</span>
-                <div style='color: #ffffff; font-weight: 600; margin-top: 4px;'>🌲 Random Forest Classifier</div>
-                <div style='color: #a0b0cc; font-size: 0.7rem; margin-top: 6px;'>
-                    • {n_estimators} arbres de décision<br>
-                    • max_depth = {max_depth}<br>
-                    • min_samples_split = 5
-                </div>
-            </div>
-            <div style='color: #4fc3f7; font-size: 1.3rem;'>↓</div>
-        </div>
-    </div>
-    """, unsafe_allow_html=True)
-    
-    # Étape 5 - Arbres
-    st.markdown(f"""
-    <div style='display: flex; justify-content: center; gap: 8px; margin-bottom: 16px;'>
-        <div style='background: #0d1a30; border-radius: 8px; padding: 6px 10px; text-align: center; flex: 1;'>
-            <div style='color: #4fc3f7; font-size: 1.2rem;'>🌳</div>
-            <div style='color: #a0b0cc; font-size: 0.65rem;'>Arbre #1</div>
-        </div>
-        <div style='background: #0d1a30; border-radius: 8px; padding: 6px 10px; text-align: center; flex: 1;'>
-            <div style='color: #4fc3f7; font-size: 1.2rem;'>🌳</div>
-            <div style='color: #a0b0cc; font-size: 0.65rem;'>Arbre #2</div>
-        </div>
-        <div style='background: #0d1a30; border-radius: 8px; padding: 6px 10px; text-align: center; flex: 1;'>
-            <div style='color: #4fc3f7; font-size: 1.2rem;'>🌳</div>
-            <div style='color: #a0b0cc; font-size: 0.65rem;'>Arbre #3</div>
-        </div>
-        <div style='background: #0d1a30; border-radius: 8px; padding: 6px 10px; text-align: center; flex: 1;'>
-            <div style='color: #4fc3f7; font-size: 1.2rem;'>⋯</div>
-            <div style='color: #a0b0cc; font-size: 0.65rem;'>+{n_estimators-3}</div>
-        </div>
-    </div>
-    """, unsafe_allow_html=True)
-    
-    st.markdown("<div style='text-align: center; margin: 8px 0; color: #4fc3f7; font-size: 1.2rem;'>↓</div>", unsafe_allow_html=True)
-    
-    # Étape 6
-    st.markdown("""
-    <div style='background: linear-gradient(135deg, #1a2a4e, #0d1a30); border-radius: 12px; padding: 12px 16px; margin-bottom: 16px; border-left: 3px solid #ffd966;'>
-        <div style='display: flex; align-items: center; justify-content: space-between;'>
-            <div>
-                <span style='color: #ffd966; font-size: 0.7rem; font-weight: 600;'># INTERFACES / VOTE</span>
-                <div style='color: #ffffff; font-weight: 500; margin-top: 4px;'>🗳️ Vote Majoritaire de la Forêt</div>
-                <div style='color: #a0b0cc; font-size: 0.75rem; margin-top: 4px;'>Prédictions: Chiffres 0–9</div>
-            </div>
-            <div style='color: #ffd966; font-size: 1.3rem;'>↓</div>
-        </div>
-    </div>
-    """, unsafe_allow_html=True)
-    
-    # Étape 7
-    st.markdown(f"""
-    <div style='background: #0d1a30; border-radius: 12px; padding: 12px 16px; border-left: 3px solid #4fc3f7;'>
-        <div style='display: flex; align-items: center; justify-content: space-between;'>
-            <div>
-                <span style='color: #ffd966; font-size: 0.7rem; font-weight: 600;'># VALIDATION</span>
-                <div style='color: #ffffff; font-weight: 500; margin-top: 4px;'>✅ Calcul de l'Accuracy</div>
-                <div style='color: #a0b0cc; font-size: 0.75rem; margin-top: 4px;'>📊 Matrice de Confusion</div>
-            </div>
-            <div style='background: linear-gradient(135deg, #4fc3f7, #1a6a8e); border-radius: 20px; padding: 4px 12px;'>
-                <span style='color: white; font-weight: 700; font-size: 0.8rem;'>{rf_acc:.1f}%</span>
-            </div>
-        </div>
-    </div>
-    """, unsafe_allow_html=True)
-    
-    st.markdown("</div></div>", unsafe_allow_html=True)
+    <div style='display: flex; gap: 20px; margin: 16px 0;'>
 
-with col_pipe2:
-    st.markdown("""
-    <div style='background: linear-gradient(135deg, #0a0f1e 0%, #0d1528 100%);
-                border: 1px solid #5a3a8e;
-                border-radius: 20px;
-                overflow: hidden;
-                box-shadow: 0 8px 32px rgba(0,0,0,0.3);'>
-    """, unsafe_allow_html=True)
-    
-    st.markdown("""
-    <div style='background: linear-gradient(135deg, #2a1a4e, #1a0d30);
-                padding: 16px 20px;
-                border-bottom: 2px solid #b39ddb;'>
-        <div style='color: #b39ddb; font-weight: 800; font-size: 1.1rem; letter-spacing: 1.5px;'>
-            🔍 APPRENTISSAGE NON SUPERVISÉ
-        </div>
-        <div style='color: #8a7aaa; font-size: 0.7rem; margin-top: 4px;'>
-            PCA + K-MEANS CLUSTERING
-        </div>
-    </div>
-    """, unsafe_allow_html=True)
-    
-    st.markdown("<div style='padding: 20px;'>", unsafe_allow_html=True)
-    
-    # Étape 1
-    st.markdown("""
-    <div style='background: #1a0d30; border-radius: 12px; padding: 12px 16px; margin-bottom: 16px; border-left: 3px solid #b39ddb;'>
-        <div style='display: flex; align-items: center; justify-content: space-between;'>
-            <div>
-                <span style='color: #ffd966; font-size: 0.7rem; font-weight: 600;'># 1 TRAITEMENT DES PIXELS</span>
-                <div style='color: #ffffff; font-weight: 600; margin-top: 4px;'>📦 Images MNIST Brutes</div>
-                <div style='color: #a0b0cc; font-size: 0.75rem;'>Sans Étiquettes</div>
+        <div style='flex: 1; background: linear-gradient(180deg, #0a1628, #1a2a4e);
+                    border: 1px solid #2a4a8e; border-radius: 12px; padding: 20px;'>
+            <div style='color: #4fc3f7; font-weight: 700; font-size: 1rem;
+                        margin-bottom: 16px; text-align: center;'>
+                🎯 Pipeline Classification
             </div>
-            <div style='color: #b39ddb; font-size: 1.3rem;'>↓</div>
-        </div>
-    </div>
-    """, unsafe_allow_html=True)
-    
-    # Étape 2
-    st.markdown("""
-    <div style='background: linear-gradient(135deg, #1a0d30, #0d0820); border-radius: 12px; padding: 12px 16px; margin-bottom: 16px; border: 1px solid #5a3a7e;'>
-        <div style='display: flex; align-items: center; justify-content: space-between;'>
-            <div>
-                <span style='color: #ffd966; font-size: 0.7rem; font-weight: 600;'># APLATISSEMENT</span>
-                <div style='color: #ffffff; font-weight: 500; margin-top: 4px;'>📄 Flatten — 784 dimensions</div>
-                <div style='color: #a0b0cc; font-size: 0.7rem;'>28×28 → vecteur 1D</div>
-            </div>
-            <div style='color: #b39ddb; font-size: 1.3rem;'>↓</div>
-        </div>
-    </div>
-    """, unsafe_allow_html=True)
-    
-    # Étape 3
-    st.markdown(f"""
-    <div style='background: linear-gradient(135deg, #2a1a5e, #1a0d40); border-radius: 12px; padding: 12px 16px; margin-bottom: 16px; border-left: 3px solid #ffd966;'>
-        <div style='display: flex; align-items: center; justify-content: space-between;'>
-            <div>
-                <span style='color: #ffd966; font-size: 0.7rem; font-weight: 600;'># 2 RÉDUCTION DE DIMENSION</span>
-                <div style='color: #ffffff; font-weight: 600; margin-top: 4px;'>📉 Analyse en Composantes Principales</div>
-                <div style='color: #a0b0cc; font-size: 0.7rem; margin-top: 6px;'>
-                    • Sélection: 784 → {n_components_pca} composantes<br>
-                    • Variance expliquée: {cumvar_pca:.1f}%<br>
-                    • Centrage et réduction
-                </div>
-            </div>
-            <div style='color: #ffd966; font-size: 1.3rem;'>↓</div>
-        </div>
-    </div>
-    """, unsafe_allow_html=True)
-    
-    # Étape 4
-    st.markdown(f"""
-    <div style='background: linear-gradient(135deg, #3a2a6e, #1a0d40); border-radius: 12px; padding: 12px 16px; margin-bottom: 16px; border: 1px solid #7a5aae;'>
-        <div style='display: flex; align-items: center; justify-content: space-between;'>
-            <div>
-                <span style='color: #ffd966; font-size: 0.7rem; font-weight: 600;'># 3 ALGORITHME K-MEANS</span>
-                <div style='color: #ffffff; font-weight: 600; margin-top: 4px;'>🔵 Initialisation de K = {n_clusters} Centroïdes</div>
-                <div style='color: #a0b0cc; font-size: 0.7rem; margin-top: 6px;'>
-                    • Calcul des Distances Euclidiennes<br>
-                    • Association au Centroïde le plus proche<br>
-                    • Itérations jusqu'à convergence
-                </div>
-            </div>
-            <div style='color: #b39ddb; font-size: 1.3rem;'>↓</div>
-        </div>
-    </div>
-    """, unsafe_allow_html=True)
-    
-    # Étape 5
-    st.markdown("""
-    <div style='background: #0d0820; border-radius: 12px; padding: 10px 16px; margin-bottom: 16px; text-align: center; border: 1px dashed #5a3a8e;'>
-        <div style='display: flex; align-items: center; justify-content: center; gap: 20px;'>
-            <span style='color: #ffd966; font-size: 0.7rem; font-weight: 600;'>CONVERGENCE ATTEINTE ?</span>
-            <div style='background: #2a5e3a; border-radius: 20px; padding: 4px 16px;'>
-                <span style='color: #66ff99; font-weight: 700; font-size: 0.8rem;'>✓ OUI</span>
+            <div style='color: #d0d0ee; font-size: 0.88rem; line-height: 2;'>
+                📦 <strong>Données MNIST</strong> (70k images)<br>
+                ↓<br>
+                ✂️ <strong>Split</strong> Train / Val / Test<br>
+                ↓<br>
+                🔢 <strong>Normalisation</strong> [0, 1]<br>
+                ↓<br>
+                🌲 <strong>Random Forest</strong> (n_estimators arbres)<br>
+                ↓<br>
+                📊 <strong>Évaluation</strong> : Accuracy, Matrice, F1<br>
+                ↓<br>
+                🔥 <strong>Feature Importance</strong> (28×28 carte)
             </div>
         </div>
-        <div style='color: #7a8aaa; font-size: 0.65rem; margin-top: 6px;'>max_iter = 300 | tol = 1e-4</div>
-    </div>
-    """, unsafe_allow_html=True)
-    
-    st.markdown("<div style='text-align: center; margin: 8px 0; color: #b39ddb; font-size: 1.2rem;'>↓</div>", unsafe_allow_html=True)
-    
-    # Étape 6
-    st.markdown(f"""
-    <div style='background: linear-gradient(135deg, #1a0d40, #0d0820); border-radius: 12px; padding: 12px 16px; border-left: 3px solid #ffd966;'>
-        <div style='display: flex; align-items: center; justify-content: space-between;'>
-            <div>
-                <span style='color: #ffd966; font-size: 0.7rem; font-weight: 600;'># 4 ANALYSE DES GROUPES</span>
-                <div style='color: #ffffff; font-weight: 500; margin-top: 4px;'>📊 Métriques d'Évaluation</div>
-                <div style='color: #a0b0cc; font-size: 0.7rem; margin-top: 6px;'>
-                    • Silhouette Score: <strong style='color: #4fc3f7'>{sil_s:.4f}</strong><br>
-                    • ARI: <strong style='color: #4fc3f7'>{ari_s:.4f}</strong><br>
-                    • NMI: <strong style='color: #4fc3f7'>{nmi_s:.4f}</strong>
-                </div>
-            </div>
-            <div style='background: linear-gradient(135deg, #b39ddb, #7a5aae); border-radius: 20px; padding: 4px 12px;'>
-                <span style='color: #1a0d40; font-weight: 700; font-size: 0.8rem;'>K={n_clusters}</span>
-            </div>
-        </div>
-    </div>
-    """, unsafe_allow_html=True)
-    
-    st.markdown("</div></div>", unsafe_allow_html=True)
 
-st.divider()
+        <div style='flex: 1; background: linear-gradient(180deg, #1a0a28, #2e1a4e);
+                    border: 1px solid #6a2a8e; border-radius: 12px; padding: 20px;'>
+            <div style='color: #b39ddb; font-weight: 700; font-size: 1rem;
+                        margin-bottom: 16px; text-align: center;'>
+                🔍 Pipeline Clustering
+            </div>
+            <div style='color: #d0d0ee; font-size: 0.88rem; line-height: 2;'>
+                📦 <strong>Données MNIST</strong> (sans labels)<br>
+                ↓<br>
+                🔢 <strong>StandardScaler</strong> (centrage-réduction)<br>
+                ↓<br>
+                📉 <strong>PCA</strong> (784 → {pca} composantes)<br>
+                ↓<br>
+                🔵 <strong>K-Means++</strong> (K={k} clusters)<br>
+                ↓<br>
+                📊 <strong>Évaluation</strong> : Silhouette, ARI, NMI<br>
+                ↓<br>
+                🗺️ <strong>t-SNE</strong> (visualisation 2D)
+            </div>
+        </div>
+
+    </div>
+    """.format(pca=n_components_pca, k=n_clusters), unsafe_allow_html=True)
+
+    st.divider()
+
+    # --- Conclusion finale ---
+    st.subheader("📝 Conclusion")
+
+    st.markdown(f"""
+    <div class='custom-box success'>
+        <strong>📌 Synthèse de l'analyse comparative :</strong>
+        <br><br>
+        Sur le dataset MNIST ({n_samples:,} images, sous-échantillon) :
+        <br><br>
+        • Le <strong>Random Forest</strong> atteint une accuracy de <strong>{rf_acc:.2f}%</strong>
+          sur le test set — résultat remarquable pour un modèle sans CNN.
+          Il exploite pleinement la structure des labels.
+        <br><br>
+        • Le <strong>K-Means</strong> (K={n_clusters}) avec PCA à {n_components_pca} composantes
+          obtient un Silhouette Score de <strong>{sil_s:.4f}</strong>, un ARI de <strong>{ari_s:.4f}</strong>
+          et un NMI de <strong>{nmi_s:.4f}</strong>. Ces scores confirment que les clusters
+          retrouvent naturellement une grande partie de la structure des classes,
+          <em>sans jamais voir les labels</em>.
+        <br><br>
+        • La projection <strong>t-SNE</strong> révèle visuellement que les deux approches
+          identifient les mêmes îlots dans l'espace des données.
+    </div>
+    """, unsafe_allow_html=True)
+
+    st.markdown("""
+    <div class='custom-box' style='border-left-color: #b39ddb; margin-top: 16px;'>
+        <strong>💡 Ce que cet exemple nous enseigne :</strong><br><br>
+        Le clustering non supervisé peut découvrir des structures significatives
+        dans les données sans <em>aucune</em> supervision — c'est puissant pour
+        l'exploration de données inconnues. Mais dès que les labels sont disponibles,
+        la classification supervisée surpasse largement le clustering en termes de précision.
+        <br><br>
+        <strong>👉 Ces deux approches sont complémentaires, pas concurrentes.</strong>
+    </div>
+    """, unsafe_allow_html=True)
