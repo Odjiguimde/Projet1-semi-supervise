@@ -1217,45 +1217,43 @@ with tab4:
     def generer_pipeline_image():
         """
         Génère le diagramme comparatif des deux pipelines sous forme d'image PNG.
-        DPI 300 — couleur unique par étape — barres d'accent latérales — halos lumineux.
+        Utilise Matplotlib avec FancyBboxPatch pour un rendu professionnel.
+        Mis en cache pour ne pas régénérer à chaque interaction.
         """
         import io
         from matplotlib.patches import FancyBboxPatch
 
-        # ── Canvas haute résolution ──────────────────────────────────────────
-        DPI = 300
-        W_fig, H_fig = 24, 22
-        fig_p, ax_p = plt.subplots(figsize=(W_fig, H_fig), facecolor='#07071a')
-        ax_p.set_facecolor('#07071a')
+        # ── Canvas ──────────────────────────────────────────────────────────
+        W_fig, H_fig = 22, 20
+        fig_p, ax_p = plt.subplots(figsize=(W_fig, H_fig), facecolor='#080812')
+        ax_p.set_facecolor('#080812')
         ax_p.set_xlim(0, W_fig)
         ax_p.set_ylim(0, H_fig)
         ax_p.axis('off')
 
-        # ── Palette — couleur unique par étape ──────────────────────────────
-        COLORS_L = [
-            {'bg':'#0a1a2e','bd':'#1e5a9e','hi':'#60c8f0','sub':'#4a9ac0'},  # ENTREE
-            {'bg':'#071e40','bd':'#1555aa','hi':'#38b6ff','sub':'#2286cc'},  # ETAPE1 bleu
-            {'bg':'#051e3c','bd':'#0d4a8a','hi':'#00d4ff','sub':'#0098bb'},  # ETAPE2 cyan
-            {'bg':'#041c38','bd':'#0b4282','hi':'#3dd6f5','sub':'#1a90b0'},  # ETAPE3 bleu glacé
-            {'bg':'#031c30','bd':'#094a6e','hi':'#00e0c8','sub':'#009898'},  # ETAPE4 turquoise
-            {'bg':'#042818','bd':'#0a6040','hi':'#00f5a0','sub':'#00b870'},  # SORTIE vert
-        ]
-        COLORS_R = [
-            {'bg':'#180a2e','bd':'#481a78','hi':'#c87aff','sub':'#9050cc'},  # ENTREE
-            {'bg':'#200840','bd':'#581a9e','hi':'#b06aff','sub':'#8040cc'},  # ETAPE1 violet
-            {'bg':'#260844','bd':'#6618aa','hi':'#d060ff','sub':'#9828cc'},  # ETAPE2 violet vif
-            {'bg':'#28063a','bd':'#6e0a90','hi':'#e050f0','sub':'#a020b8'},  # ETAPE3 violet-rose
-            {'bg':'#280430','bd':'#760880','hi':'#f040d8','sub':'#aa18a0'},  # ETAPE4 rose
-            {'bg':'#220028','bd':'#6c0068','hi':'#ff40c0','sub':'#cc1090'},  # SORTIE magenta
-        ]
+        # ── Palette de couleurs ──────────────────────────────────────────────
+        PC = {
+            'blue_bg': '#0a1e36', 'blue_bd': '#1e4a80',
+            'blue_hi': '#4fc3f7', 'blue_sub': '#6aabd4',
+            'purp_bg': '#160a2e', 'purp_bd': '#3a1a6e',
+            'purp_hi': '#b39ddb', 'purp_sub': '#8877bb',
+            'gray_bg': '#141424', 'gray_bd': '#2a2a4e',
+            'gray_hi': '#d0d0ee', 'gray_sub': '#8888aa',
+            'teal_bg': '#04261c', 'teal_bd': '#0e5236',
+            'teal_hi': '#00e5a0', 'teal_sub': '#4caf50',
+            'sep':     '#1e1e36',
+            'arr_b':   '#4fc3f7',
+            'arr_p':   '#b39ddb',
+            'arr_t':   '#00e5a0',
+        }
 
-        BOX_W   = 8.4
-        BOX_H   = 1.18
-        CX_L    = 5.4
-        CX_R    = 18.0
-        SEP_X   = 11.8
-        Y0      = 20.1
-        STEPS_Y = [17.6, 15.5, 13.4, 11.3, 9.2, 7.1]
+        BOX_W  = 7.8
+        BOX_H  = 1.05
+        CX_L   = 5.1    # centre colonne gauche
+        CX_R   = 16.9   # centre colonne droite
+        SEP_X  = 11.0   # séparateur vertical
+        Y0     = 16.8   # y des headers
+        STEPS_Y = [14.5, 12.5, 10.5, 8.5, 6.5, 4.5]
 
         # ── Fonctions utilitaires ────────────────────────────────────────────
         def rbox(cx, cy, w, h, bg, bd, lw=1.4, rx=0.22, zo=3):
