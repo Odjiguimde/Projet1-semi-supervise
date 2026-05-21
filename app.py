@@ -1211,98 +1211,80 @@ with tab4:
     st.divider()
 
       # --- Schéma de flux comparatif ---
-    st.subheader("🔄 Pipeline Comparatif")
+st.subheader("🔄 Pipeline Comparatif")
 
-    col_pipe1, col_pipe2 = st.columns(2)
+col_pipe1, col_pipe2 = st.columns(2)
 
-    with col_pipe1:
-        st.markdown(f"""
-        <div style='background: linear-gradient(180deg, #0a1628, #1a2a4e);
-                    border: 1px solid #2a4a8e;
-                    border-radius: 12px;
-                    padding: 20px;
-                    min-height: 420px;'>
-
-            <div style='color: #4fc3f7;
-                        font-weight: 700;
-                        font-size: 1rem;
-                        margin-bottom: 16px;
-                        text-align: center;'>
-
-                🎯 Pipeline Classification
-            </div>
-
-            <div style='color: #d0d0ee;
-                        font-size: 0.92rem;
-                        line-height: 2;
-                        text-align:center;'>
-
-                📦 <strong>Données MNIST</strong><br>
-                ⬇️<br>
-
-                ✂️ <strong>Split</strong><br>
-                ⬇️<br>
-
-                🔢 <strong>Normalisation</strong><br>
-                ⬇️<br>
-
-                🌲 <strong>Random Forest</strong><br>
-                ({n_estimators} arbres)<br>
-                ⬇️<br>
-
-                📊 <strong>Évaluation</strong><br>
-                Accuracy • Matrice • F1<br>
-                ⬇️<br>
-
-                🔥 <strong>Feature Importance</strong>
-            </div>
+with col_pipe1:
+    st.markdown(f"""
+    <div style='background: linear-gradient(180deg, #0a1628, #1a2a4e);
+                border: 1px solid #2a4a8e;
+                border-radius: 12px;
+                padding: 20px;
+                min-height: 420px;'>
+        <div style='color: #4fc3f7;
+                    font-weight: 700;
+                    font-size: 1rem;
+                    margin-bottom: 16px;
+                    text-align: center;'>
+            🎯 Pipeline Classification
         </div>
-        """, unsafe_allow_html=True)
-
-    with col_pipe2:
-        st.markdown(f"""
-        <div style='background: linear-gradient(180deg, #1a0a28, #2e1a4e);
-                    border: 1px solid #6a2a8e;
-                    border-radius: 12px;
-                    padding: 20px;
-                    min-height: 420px;'>
-
-            <div style='color: #b39ddb;
-                        font-weight: 700;
-                        font-size: 1rem;
-                        margin-bottom: 16px;
-                        text-align: center;'>
-
-                🔍 Pipeline Clustering
-            </div>
-
-            <div style='color: #d0d0ee;
-                        font-size: 0.92rem;
-                        line-height: 2;
-                        text-align:center;'>
-
-                📦 <strong>Données MNIST</strong><br>
-                ⬇️<br>
-
-                🔢 <strong>StandardScaler</strong><br>
-                ⬇️<br>
-
-                📉 <strong>PCA</strong><br>
-                784 → {n_components_pca}<br>
-                ⬇️<br>
-
-                🔵 <strong>K-Means++</strong><br>
-                K = {n_clusters}<br>
-                ⬇️<br>
-
-                📊 <strong>Évaluation</strong><br>
-                Silhouette • ARI • NMI<br>
-                ⬇️<br>
-
-                🗺️ <strong>t-SNE</strong>
-            </div>
+        <div style='color: #d0d0ee;
+                    font-size: 0.92rem;
+                    line-height: 2;
+                    text-align: center;'>
+            📦 <strong>Données MNIST</strong><br>
+            ⬇️<br>
+            ✂️ <strong>Split</strong><br>
+            ⬇️<br>
+            🔢 <strong>Normalisation</strong><br>
+            ⬇️<br>
+            🌲 <strong>Random Forest</strong><br>
+            ({n_estimators} arbres)<br>
+            ⬇️<br>
+            📊 <strong>Évaluation</strong><br>
+            Accuracy • Matrice • F1<br>
+            ⬇️<br>
+            🔥 <strong>Feature Importance</strong>
         </div>
-        """, unsafe_allow_html=True)
+    </div>
+    """, unsafe_allow_html=True)
+
+with col_pipe2:
+    st.markdown(f"""
+    <div style='background: linear-gradient(180deg, #1a0a28, #2e1a4e);
+                border: 1px solid #6a2a8e;
+                border-radius: 12px;
+                padding: 20px;
+                min-height: 420px;'>
+        <div style='color: #b39ddb;
+                    font-weight: 700;
+                    font-size: 1rem;
+                    margin-bottom: 16px;
+                    text-align: center;'>
+            🔍 Pipeline Clustering
+        </div>
+        <div style='color: #d0d0ee;
+                    font-size: 0.92rem;
+                    line-height: 2;
+                    text-align: center;'>
+            📦 <strong>Données MNIST</strong><br>
+            ⬇️<br>
+            🔢 <strong>StandardScaler</strong><br>
+            ⬇️<br>
+            📉 <strong>PCA</strong><br>
+            784 → {n_components_pca}<br>
+            ⬇️<br>
+            🔵 <strong>K-Means++</strong><br>
+            K = {n_clusters}<br>
+            ⬇️<br>
+            📊 <strong>Évaluation</strong><br>
+            Silhouette • ARI • NMI<br>
+            ⬇️<br>
+            🗺️ <strong>t-SNE</strong>
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
 
     # --- Conclusion finale ---
     st.subheader("📝 Conclusion")
