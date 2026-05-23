@@ -610,7 +610,7 @@ with tab2:
         rows.append({"Chiffre": digit, "Précision": f"{p:.3f}",
                      "Rappel": f"{r:.3f}", "F1-Score": f"{f1:.3f}",
                      "Support": int(np.sum(mask))})
-    st.dataframe(pd.DataFrame(rows).set_index("Chiffre"), use_container_width=True)
+    st.dataframe(pd.DataFrame(rows).set_index("Chiffre"), width="stretch")
 
     # --- Images bien / mal classées ---
     st.divider()
@@ -871,7 +871,7 @@ with tab4:
         })
 
     df_purity = pd.DataFrame(rows_purity)
-    st.dataframe(df_purity, use_container_width=True)
+    st.dataframe(df_purity, width="stretch")
 
     # Graphique pureté par cluster
     st.divider()
@@ -981,7 +981,7 @@ with tab4:
     df_comp["ARI"]       = df_comp["ARI"].apply(lambda x: f"{x:.4f}")
     df_comp["NMI"]       = df_comp["NMI"].apply(lambda x: f"{x:.4f}")
     df_comp["Silhouette"]= df_comp["Silhouette"].apply(lambda x: f"{x:.4f}")
-    st.dataframe(df_comp, use_container_width=True)
+    st.dataframe(df_comp, width="stretch")
 
     # Graphique 4 métriques
     fig_comp, axes_comp = plt.subplots(1, 4, figsize=(16, 5), facecolor="#0d0d1a")
