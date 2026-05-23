@@ -1,3 +1,4 @@
+pip>=24.3
 streamlit>=1.35.0
 scikit-learn>=1.4.0
 matplotlib>=3.8.0
