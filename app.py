@@ -221,29 +221,38 @@ def _dark_axes(ax):
 # CHARGEMENT ET ENTRAÎNEMENT (cachés)
 # ─────────────────────────────────────────────────────────────────────────────
 
-@st.cache_data(show_spinner="⏳ Chargement de MNIST via Keras (~5s)...")
+@st.cache_data(show_spinner="⏳ Chargement de MNIST...")
 def charger_mnist():
     """
-    Charge MNIST via tensorflow.keras (CDN rapide, ~5s).
-    Keras fournit un split 60k train / 10k test.
-    On découpe le train en 50k train + 10k validation pour rester
-    fidèle au split du notebook (50k / 10k / 10k).
+    Charge MNIST — tente Keras en premier (rapide, ~5s),
+    puis fallback sur fetch_openml si Keras n'est pas disponible.
+    Split fidèle au notebook : 50k train / 10k val / 10k test.
     Normalisation pixel : [0,255] → [0,1].
     """
-    from tensorflow.keras.datasets import mnist as keras_mnist
+    try:
+        # ── Option rapide : Keras / TensorFlow ──────────────────────────────
+        from tensorflow.keras.datasets import mnist as keras_mnist
+        (X_tr_raw, y_tr_raw), (X_test_raw, y_test_raw) = keras_mnist.load_data()
 
-    (X_tr_raw, y_tr_raw), (X_test_raw, y_test_raw) = keras_mnist.load_data()
+        X_tr_raw   = X_tr_raw.reshape(-1, 784).astype(np.float32)   / 255.0
+        X_test_raw = X_test_raw.reshape(-1, 784).astype(np.float32) / 255.0
+        y_tr_raw   = y_tr_raw.astype(int)
+        y_test_raw = y_test_raw.astype(int)
 
-    # Aplatir 28x28 -> 784
-    X_tr_raw   = X_tr_raw.reshape(-1, 784).astype(np.float32)   / 255.0
-    X_test_raw = X_test_raw.reshape(-1, 784).astype(np.float32) / 255.0
-    y_tr_raw   = y_tr_raw.astype(int)
-    y_test_raw = y_test_raw.astype(int)
+        X_train, y_train = X_tr_raw[:50_000], y_tr_raw[:50_000]
+        X_val,   y_val   = X_tr_raw[50_000:], y_tr_raw[50_000:]  # 10 000
+        X_test,  y_test  = X_test_raw,         y_test_raw         # 10 000
 
-    # Split 50k train / 10k val / 10k test (fideele au notebook)
-    X_train, y_train = X_tr_raw[:50_000],  y_tr_raw[:50_000]
-    X_val,   y_val   = X_tr_raw[50_000:],  y_tr_raw[50_000:]   # 10 000 images
-    X_test,  y_test  = X_test_raw,          y_test_raw          # 10 000 images
+    except Exception:
+        # ── Fallback : fetch_openml (sklearn) ───────────────────────────────
+        from sklearn.datasets import fetch_openml
+        mnist  = fetch_openml("mnist_784", version=1, as_frame=False, parser="auto")
+        X_full = mnist.data.astype(np.float32) / 255.0
+        y_full = mnist.target.astype(int)
+
+        X_train, y_train = X_full[:50_000],          y_full[:50_000]
+        X_val,   y_val   = X_full[50_000:60_000],    y_full[50_000:60_000]
+        X_test,  y_test  = X_full[60_000:70_000],    y_full[60_000:70_000]
 
     return X_train, y_train, X_val, y_val, X_test, y_test
 
