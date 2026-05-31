@@ -17,7 +17,6 @@ import seaborn as sns
 import streamlit as st
 import pandas as pd
 
-from sklearn.datasets import fetch_openml
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.decomposition import PCA
 from sklearn.cluster import KMeans
@@ -100,13 +99,52 @@ section[data-testid="stSidebar"] *{color:#e0e0ff!important;}
 
 @st.cache_data(show_spinner="⏳ Chargement de MNIST...")
 def charger_mnist(n_samples: int = 10_000):
-    mnist  = fetch_openml("mnist_784", version=1, as_frame=False, parser="auto")
-    X_full = mnist.data.astype(np.float32) / 255.0
-    y_full = mnist.target.astype(int)
-    idx    = np.random.RandomState(SEED).permutation(len(X_full))[:n_samples]
-    X, y   = X_full[idx], y_full[idx]
-    n      = len(X)
-    n_train, n_val = int(n*0.70), int(n*0.15)
+    """
+    Charge MNIST avec fallback automatique :
+      1. torchvision.datasets.MNIST  (rapide, pas de réseau externe)
+      2. keras / tensorflow datasets (si disponible)
+      3. fetch_openml                (dernier recours)
+    """
+    X_full, y_full = None, None
+
+    # ── Source 1 : torchvision (le plus fiable sur Streamlit Cloud)
+    try:
+        import torchvision
+        import tempfile, os
+        with tempfile.TemporaryDirectory() as tmp:
+            train_ds = torchvision.datasets.MNIST(root=tmp, train=True,  download=True)
+            test_ds  = torchvision.datasets.MNIST(root=tmp, train=False, download=True)
+        X_train_tv = np.array(train_ds.data).reshape(-1, 784).astype(np.float32) / 255.0
+        y_train_tv = np.array(train_ds.targets)
+        X_test_tv  = np.array(test_ds.data).reshape(-1, 784).astype(np.float32)  / 255.0
+        y_test_tv  = np.array(test_ds.targets)
+        X_full = np.concatenate([X_train_tv, X_test_tv], axis=0)
+        y_full = np.concatenate([y_train_tv, y_test_tv], axis=0)
+    except Exception:
+        pass
+
+    # ── Source 2 : keras (si torchvision échoue)
+    if X_full is None:
+        try:
+            from tensorflow.keras.datasets import mnist as keras_mnist
+            (Xtr, ytr), (Xte, yte) = keras_mnist.load_data()
+            X_full = np.concatenate([Xtr.reshape(-1,784), Xte.reshape(-1,784)], 0).astype(np.float32) / 255.0
+            y_full = np.concatenate([ytr, yte], 0).astype(int)
+        except Exception:
+            pass
+
+    # ── Source 3 : OpenML (dernier recours)
+    if X_full is None:
+        from sklearn.datasets import fetch_openml
+        mnist  = fetch_openml("mnist_784", version=1, as_frame=False, parser="auto")
+        X_full = mnist.data.astype(np.float32) / 255.0
+        y_full = mnist.target.astype(int)
+
+    # ── Sous-échantillonnage reproductible
+    idx = np.random.RandomState(SEED).permutation(len(X_full))[:n_samples]
+    X, y = X_full[idx], y_full[idx]
+    n = len(X)
+    n_train, n_val = int(n * 0.70), int(n * 0.15)
     return (X[:n_train], y[:n_train],
             X[n_train:n_train+n_val], y[n_train:n_train+n_val],
             X[n_train+n_val:], y[n_train+n_val:],
