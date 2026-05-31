@@ -7,7 +7,7 @@
 # ── Interface Streamlit
 streamlit>=1.35.0
 
-# ── Deep Learning (CPU ou GPU)
+# ── Deep Learning — AUSSI utilisé pour charger MNIST (source 1, la plus fiable)
 torch>=2.1.0
 torchvision>=0.16.0
 
@@ -22,20 +22,18 @@ pandas>=2.1.0
 matplotlib>=3.8.0
 seaborn>=0.13.0
 
-# ── Chargement MNIST depuis OpenML
-openml>=0.14.0
+# ── Chargement MNIST — openml en dernier recours uniquement
+# torchvision (ci-dessus) est la source principale sur Streamlit Cloud
+# openml est optionnel (3ème fallback)
+# openml>=0.14.0
 
 # ─────────────────────────────────────────────────────────────────────────────
-# Versions exactes de l'environnement de développement (référence) :
-#   numpy==2.4.4
-#   matplotlib==3.10.8
-#   seaborn==0.13.2
-#   pandas==3.0.2
-#   scikit-learn==1.8.0
-#   torch==2.12.0
-#   torchvision==0.27.0
+# Stratégie de chargement MNIST (automatique, sans intervention) :
+#   1. torchvision.datasets.MNIST  ← prioritaire, fonctionne sur Streamlit Cloud
+#   2. keras.datasets.mnist        ← si tensorflow installé
+#   3. sklearn fetch_openml        ← dernier recours (peut échouer en cloud)
 # ─────────────────────────────────────────────────────────────────────────────
 
 # ── NOTE GPU (optionnel) :
-# Pour utiliser CUDA, remplacer torch et torchvision par :
+# Pour CUDA, remplacer torch+torchvision par :
 #   pip install torch torchvision --index-url https://download.pytorch.org/whl/cu121
